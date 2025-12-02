@@ -78,6 +78,7 @@ set -g @plugin 'tmux-plugins/tmux-continuum'
 set -g @plugin 'wfxr/tmux-power'
 # You can set it to a true color in '#RRGGBB' format
 set -g @tmux_power_theme '#7DCFFF' # dark slate blue
+set-option -g default-shell /usr/bin/zsh
 
 # Or you can set it to 'colorX' which honors your terminal colorscheme
 
@@ -124,3 +125,4 @@ sed -i s'/{ import = "astrocommunity.pack.lua" },/{ import = "astrocommunity.pac
   {import = "astrocommunity.colorscheme.tokyonight-nvim"},\
   { import = "astrocommunity.recipes.cache-colorscheme" },/' $my_username/.config/nvim/lua/community.lua
 sed -i s'/"astrodark"/"tokyonight-night", -- use tokyonight-light for a lightmode/' $my_username/.config/nvim/lua/plugins/astroui.lua
+sed -i '1d' $my_username/.bashrc
