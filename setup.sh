@@ -28,8 +28,8 @@ curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain stable -y
 sudo systemctl start ssh && sudo systemctl enable ssh
 
 # Install oh-my-zsh
-sudo -u ubuntu sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-wait
+# sudo -u ubuntu sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+# wait
 # Install zsh plugins
 sudo -u ubuntu git clone https://github.com/zsh-users/zsh-autosuggestions.git $ZSH_CUSTOM/plugins/zsh-autosuggestions
 sudo -u ubuntu git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $ZSH_CUSTOM/plugins/zsh-syntax-highlighting
@@ -37,6 +37,15 @@ sudo -u ubuntu git clone --depth 1 -- https://github.com/marlonrichert/zsh-autoc
 
 # Add zsh customization
 cat <<EOF >>$my_username/.zshrc
+export ZSH="/home/ubuntu/.oh-my-zsh"
+ZSH_THEME=bira
+plugins=(git ssh ubuntu vi-mode zsh-syntax-highlighting zsh-autosuggestions zsh-autocomplete)
+source $ZSH/oh-my-zsh.sh
+export NVM_DIR="$HOM/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion.sh"
+
+
 alias cat="batcat"
 alias cd="z"
 alias ce="python3 -m venv venv"
