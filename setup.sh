@@ -5,7 +5,7 @@ echo $my_username
 sudo -u ubuntu echo $ZSH_CUSTOM
 add-apt-repository -y ppa:zhangsongcui3371/fastfetch
 apt update && apt upgrade -y
-apt install -y zoxide tmux fastfetch curl libssl-dev build-essential zsh bat entr python3 nodejs npm ripgrep fzf openssh-server
+apt install -y gh zoxide tmux fastfetch curl libssl-dev build-essential zsh bat entr python3 nodejs npm ripgrep fzf openssh-server
 snap install nvim --classic
 snap install wl-clip
 
@@ -110,11 +110,14 @@ curl -Lo lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/downl
 tar xf lazygit.tar.gz lazygit
 sudo install lazygit -D -t /usr/local/bin/
 
+
 rm -rf $my_username/.config/nvim
 
 git clone --depth 1 https://github.com/AstroNvim/template $my_username/.config/nvim
 # remove template's git connection to set up your own later
 rm -rf $my_username/.config/nvim/.git
+
+sudo chown -R ubuntu $my_username/.config
 
 sed -i s'/plugins=(git)/plugins=(git ssh ubuntu vi-mode zsh-syntax-highlighting zsh-autosuggestions zsh-autocomplete)/' $my_username/.zshrc
 sed -i s'/"robbyrussell"/bira/' $my_username/.zshrc
