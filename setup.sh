@@ -4,8 +4,7 @@ ZSH_CUSTOM=$my_username/.oh-my-zsh/custom
 echo $my_username
 sudo -u ubuntu echo $ZSH_CUSTOM
 sudo chown -R ubuntu /home/ubuntu
-sudo chown ubuntu /home/ubuntu/.zshrc
-
+cd /home/ubuntu
 # Add fastfetch ppa
 add-apt-repository -y ppa:zhangsongcui3371/fastfetch
 
