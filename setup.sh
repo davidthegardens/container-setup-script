@@ -5,9 +5,8 @@ echo $my_username
 sudo -u ubuntu echo $ZSH_CUSTOM
 add-apt-repository -y ppa:zhangsongcui3371/fastfetch
 apt update && apt upgrade -y
-apt install -y gh zoxide tmux fastfetch curl libssl-dev build-essential zsh bat entr python3 nodejs npm ripgrep fzf openssh-server
+apt install -y wl-clipboard zip gh zoxide tmux fastfetch curl libssl-dev build-essential zsh bat entr python3 nodejs npm ripgrep fzf openssh-server
 snap install nvim --classic
-snap install wl-clip
 
 git clone https://github.com/tmux-plugins/tpm $my_username/.tmux/plugins/tpm
 sudo chmod 777 $my_username/.tmux/plugins
@@ -43,7 +42,7 @@ bind C-Space send-prefix
 set -s escape-time 0
 
 # Set the default shell to be a login shell
-set-option -g default-command "$SHELL -l"
+set-option -g default-command "/bin/bash -l"
 
 # Force tmux to get the DISPLAY variable from the SSH session
 set-option -g update-environment "DISPLAY"
@@ -79,8 +78,19 @@ set -g @plugin 'wfxr/tmux-power'
 # You can set it to a true color in '#RRGGBB' format
 set -g @tmux_power_theme '#7DCFFF' # dark slate blue
 set-option -g default-shell /usr/bin/zsh
-set -s set-clipboard on
+
 set -g allow-passthrough
+set-option -sg set-clipboard on
+
+bind -T copy-mode-vi v send-keys -X begin-selection
+bind -T copy-mode-vi y send-keys -X copy-pipe-and-cancel 'wl-copy'
+
+# Change Enter to use system clipboard as well
+unbind -T copy-mode-vi Enter
+bind -T copy-mode-vi Enter send-keys -X copy-pipe-and-cancel 'wl-copy'
+
+# Vi-like paste
+bind P paste-buffer
 
 # Or you can set it to 'colorX' which honors your terminal colorscheme
 
@@ -90,8 +100,7 @@ set -g @tmux_power_g1 "#414868"
 set -g @tmux_power_g2 "#414868"
 set -g @tmux_power_g3 "#414868"
 set -g @tmux_power_g4 "#414868"
-run '~/.tmux/plugins/tpm/tpm'
-EOF
+run '~/.tmux/plugins/tpm/tpm'EOF
 
 echo 'eval "$(zoxide init zsh)"' >>$my_username/.zshrc
 . "$HOME/.cargo/env"
