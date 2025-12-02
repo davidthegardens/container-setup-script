@@ -172,6 +172,4 @@ sed -i s'/{ import = "astrocommunity.pack.lua" },/{ import = "astrocommunity.pac
   {import = "astrocommunity.colorscheme.tokyonight-nvim"},\
   { import = "astrocommunity.recipes.cache-colorscheme" },/' $my_username/.config/nvim/lua/community.lua
 sed -i s'/"astrodark"/"tokyonight-night", -- use tokyonight-light for a lightmode/' $my_username/.config/nvim/lua/plugins/astroui.lua
-
-# Delete remove this script from .bashrc startup sequence
-sed -i '1d' $my_username/.bashrc
+exit
