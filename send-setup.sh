@@ -7,14 +7,14 @@ LOCATIONNAME="/var/snap/lxd/common/lxd/containers/${lxcname}/rootfs/home/ubuntu"
 KEYFILELOCATION="/home/d/.ssh/container-${lxcname}"
 rm -rf $LOCATIONNAME/container-setup-script
 git clone --depth 1 https://github.com/davidthegardens/container-setup-script.git $LOCATIONNAME/container-setup-script
-touch $LOCATIONNAME/.bashrc
-# echo 'sudo /home/ubuntu/container-setup-script/setup.sh' | cat - $LOCATIONNAME/.bashrc >temp && mv temp $LOCATIONNAME/.bashrc
+touch /home/ubuntu/container-setup-script/setup.sh
+echo 'sudo /home/ubuntu/container-setup-script/setup.sh; exit' | cat - $LOCATIONNAME/.bashrc >temp && mv temp $LOCATIONNAME/.bashrc
 
 sudo -u d ssh-keygen -t ed25519 -f $KEYFILELOCATION
 cat "${KEYFILELOCATION}.pub" >>"${LOCATIONNAME}/.ssh/authorized_keys"
 ip_addr_unfmt=$(lxc exec $lxcname -- ip addr show eth0 | grep "inet\b" | awk '{print $2}')
 ip_addr="${ip_addr_unfmt:0:-3}"
-lxc exec $lxcname -- bash /home/ubuntu/container-setup-script/setup.sh
+lxc exec $lxcname -- sudo -u ubuntu bash
 
 cat <<EOF >>/home/d/.ssh/config
 
