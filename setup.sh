@@ -79,6 +79,8 @@ set -g @plugin 'wfxr/tmux-power'
 # You can set it to a true color in '#RRGGBB' format
 set -g @tmux_power_theme '#7DCFFF' # dark slate blue
 set-option -g default-shell /usr/bin/zsh
+set -s set-clipboard on
+set -g allow-passthrough
 
 # Or you can set it to 'colorX' which honors your terminal colorscheme
 
