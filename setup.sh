@@ -118,6 +118,8 @@ git clone --depth 1 https://github.com/AstroNvim/template $my_username/.config/n
 rm -rf $my_username/.config/nvim/.git
 
 sudo chown -R ubuntu $my_username/.config
+git config --global user.name="davidthegardens"
+git config --global user.email="github.matador258@passmail.net"
 
 sed -i s'/plugins=(git)/plugins=(git ssh ubuntu vi-mode zsh-syntax-highlighting zsh-autosuggestions zsh-autocomplete)/' $my_username/.zshrc
 sed -i s'/"robbyrussell"/bira/' $my_username/.zshrc
