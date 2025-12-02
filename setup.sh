@@ -157,8 +157,8 @@ rm -rf $my_username/.config/nvim/.git
 sudo chown -R ubuntu $my_username/.config
 
 # Configure git
-git config --global user.name="davidthegardens"
-git config --global user.email="github.matador258@passmail.net"
+git config --global user.name "davidthegardens"
+git config --global user.email "github.matador258@passmail.net"
 
 # Change zsh preferences
 sed -i s'/plugins=(git)/plugins=(git ssh ubuntu vi-mode zsh-syntax-highlighting zsh-autosuggestions zsh-autocomplete)/' $my_username/.zshrc
