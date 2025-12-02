@@ -3,6 +3,7 @@ my_username=/home/ubuntu
 ZSH_CUSTOM=$my_username/.oh-my-zsh/custom
 echo $my_username
 sudo -u ubuntu echo $ZSH_CUSTOM
+sudo chown ubuntu -R /home/ubuntu
 
 # Add fastfetch ppa
 add-apt-repository -y ppa:zhangsongcui3371/fastfetch
@@ -152,9 +153,6 @@ git clone --depth 1 https://github.com/AstroNvim/template $my_username/.config/n
 
 # remove template's git connection to set up your own later
 rm -rf $my_username/.config/nvim/.git
-
-# Change owner of .config
-sudo chown -R ubuntu $my_username/.config
 
 # Configure git
 git config --global user.name "davidthegardens"

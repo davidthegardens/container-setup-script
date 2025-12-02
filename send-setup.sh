@@ -7,7 +7,7 @@ LOCATIONNAME="/var/snap/lxd/common/lxd/containers/${lxcname}/rootfs/home/ubuntu"
 KEYFILELOCATION="/home/d/.ssh/container-${lxcname}"
 rm -rf $LOCATIONNAME/container-setup-script
 git clone --depth 1 https://github.com/davidthegardens/container-setup-script.git $LOCATIONNAME/container-setup-script
-touch /home/ubuntu/container-setup-script/setup.sh
+sudo touch $LOCATIONNAME/.bashrc
 echo 'sudo /home/ubuntu/container-setup-script/setup.sh; exit' | cat - $LOCATIONNAME/.bashrc >temp && mv temp $LOCATIONNAME/.bashrc
 
 sudo -u d ssh-keygen -t ed25519 -f $KEYFILELOCATION
