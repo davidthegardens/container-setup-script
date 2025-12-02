@@ -3,7 +3,7 @@ my_username=/home/ubuntu
 ZSH_CUSTOM=$my_username/.oh-my-zsh/custom
 echo $my_username
 sudo -u ubuntu echo $ZSH_CUSTOM
-sudo chown ubuntu -R /home/ubuntu
+sudo chown -R ubuntu /home/ubuntu
 
 # Add fastfetch ppa
 add-apt-repository -y ppa:zhangsongcui3371/fastfetch
@@ -28,7 +28,7 @@ sudo systemctl start ssh && sudo systemctl enable ssh
 
 # Install oh-my-zsh
 sudo -u ubuntu sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-
+wait
 # Install zsh plugins
 sudo -u ubuntu git clone https://github.com/zsh-users/zsh-autosuggestions.git $ZSH_CUSTOM/plugins/zsh-autosuggestions
 sudo -u ubuntu git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $ZSH_CUSTOM/plugins/zsh-syntax-highlighting
