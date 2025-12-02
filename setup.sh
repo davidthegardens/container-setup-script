@@ -117,11 +117,10 @@ rm -rf $my_username/.config/nvim/.git
 
 sed -i s'/plugins=(git)/plugins=(git ssh ubuntu vi-mode zsh-syntax-highlighting zsh-autosuggestions zsh-autocomplete)/' $my_username/.zshrc
 sed -i s'/"robbyrussell"/bira/' $my_username/.zshrc
-sed -i s'/if true then return end -- WARN: REMOVE THIS LINE TO ACTIVATE THIS FILE//' $my_username/.config/nvim/lua/community.lua
-sed -i s'/if true then return end -- WARN: REMOVE THIS LINE TO ACTIVATE THIS FILE//' $my_username/.config/nvim/lua/plugins/astroui.lua
+sed -i '1d' $my_username/.config/nvim/lua/community.lua
+sed -i '1d' $my_username/.config/nvim/lua/plugins/astroui.lua
 
-sed -i s'/{ import = "astrocommunity.pack.lua" },/{ import = "astrocommunity.pack.lua" },
-  {import = "astrocommunity.colorscheme.tokyonight-nvim"},
-  { import = "astrocommunity.recipes.cache-colorscheme" },
-/' $my_username/.config/nvim/lua/community.lua
+sed -i s'/{ import = "astrocommunity.pack.lua" },/{ import = "astrocommunity.pack.lua" },\
+  {import = "astrocommunity.colorscheme.tokyonight-nvim"},\
+  { import = "astrocommunity.recipes.cache-colorscheme" },/' $my_username/.config/nvim/lua/community.lua
 sed -i s'/"astrodark"/"tokyonight-night", -- use tokyonight-light for a lightmode/' $my_username/.config/nvim/lua/plugins/astroui.lua
