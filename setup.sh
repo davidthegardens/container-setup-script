@@ -5,7 +5,7 @@ echo $my_username
 sudo -u ubuntu echo $ZSH_CUSTOM
 add-apt-repository -y ppa:zhangsongcui3371/fastfetch
 apt update && apt upgrade -y
-apt install -y zoxide tmux fastfetch curl libssl-dev build-essential zsh bat entr python3 nodejs npm ripgrep fzf
+apt install -y zoxide tmux fastfetch curl libssl-dev build-essential zsh bat entr python3 nodejs npm ripgrep fzf openssh-server
 snap install nvim --classic
 snap install wl-clip
 
@@ -13,7 +13,7 @@ git clone https://github.com/tmux-plugins/tpm $my_username/.tmux/plugins/tpm
 sudo chmod 777 $my_username/.tmux/plugins
 
 curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain stable -y
-
+sudo systemctl start ssh && sudo systemctl enable ssh
 sudo -u ubuntu sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 sudo -u ubuntu git clone https://github.com/zsh-users/zsh-autosuggestions.git $ZSH_CUSTOM/plugins/zsh-autosuggestions
 sudo -u ubuntu git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $ZSH_CUSTOM/plugins/zsh-syntax-highlighting
