@@ -1,10 +1,11 @@
 #!/bin/bash
-my_username=/home/ubuntu
-ZSH_CUSTOM=$my_username/.oh-my-zsh/custom
-echo $my_username
-sudo -u ubuntu echo $ZSH_CUSTOM
-sudo chown -R ubuntu /home/ubuntu
-cd /home/ubuntu
+my_username=ubuntu
+home_path=/home/$my_username
+ZSH_CUSTOM=$home_path/.oh-my-zsh/custom
+echo $home_path
+sudo -u $my_username echo $ZSH_CUSTOM
+sudo chown -R $my_username $home_path
+cd $home_path
 # Add fastfetch ppa
 add-apt-repository -y ppa:zhangsongcui3371/fastfetch
 
@@ -17,8 +18,8 @@ snap install nvim --classic
 wget https://github.com/git-ecosystem/git-credential-manager/releases/download/v2.6.1/gcm-linux_amd64.2.6.1.deb
 
 # Install TPM for tmux
-git clone https://github.com/tmux-plugins/tpm $my_username/.tmux/plugins/tpm
-sudo chmod 777 $my_username/.tmux/plugins
+git clone https://github.com/tmux-plugins/tpm $home_path/.tmux/plugins/tpm
+sudo chmod 777 $home_path/.tmux/plugins
 
 # Install rust
 curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain stable -y
@@ -27,24 +28,15 @@ curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain stable -y
 sudo systemctl start ssh && sudo systemctl enable ssh
 
 # Install oh-my-zsh
-sudo -u ubuntu HOME=/home/ubuntu sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+sudo -u $my_username sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 # wait
 # Install zsh plugins
-sudo -u ubuntu git clone https://github.com/zsh-users/zsh-autosuggestions.git $ZSH_CUSTOM/plugins/zsh-autosuggestions
-sudo -u ubuntu git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $ZSH_CUSTOM/plugins/zsh-syntax-highlighting
-sudo -u ubuntu git clone --depth 1 -- https://github.com/marlonrichert/zsh-autocomplete.git $ZSH_CUSTOM/plugins/zsh-autocomplete
+sudo -u $my_username git clone https://github.com/zsh-users/zsh-autosuggestions.git $ZSH_CUSTOM/plugins/zsh-autosuggestions
+sudo -u $my_username git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $ZSH_CUSTOM/plugins/zsh-syntax-highlighting
+sudo -u $my_username git clone --depth 1 -- https://github.com/marlonrichert/zsh-autocomplete.git $ZSH_CUSTOM/plugins/zsh-autocomplete
 
 # Add zsh customization
-cat <<EOF >>$my_username/.zshrc
-# export ZSH="/home/ubuntu/.oh-my-zsh"
-# ZSH_THEME=bira
-# plugins=(git ssh ubuntu vi-mode zsh-syntax-highlighting zsh-autosuggestions zsh-autocomplete)
-# source $ZSH/oh-my-zsh.sh
-# export NVM_DIR="$HOME/.nvm"
-# [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-# [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion.sh"
-#
-
+cat <<EOF >>$home_path/.zshrc
 alias cat="batcat"
 alias cd="z"
 alias ce="python3 -m venv venv"
@@ -53,12 +45,12 @@ clear
 fastfetch
 alias vi="nvim"
 export EDITOR="nvim"
-alias lighten="sed -i s'/"tokyonight-night"/"tokyonight-light"/' $my_username/.config/nvim/lua/plugins/astroui.lua"
-alias darken="sed -i s'/"tokyonight-light"/"tokyonight-night"/' $my_username/.config/nvim/lua/plugins/astroui.lua"
+alias lighten="sed -i s'/"tokyonight-night"/"tokyonight-light"/' $home_path/.config/nvim/lua/plugins/astroui.lua"
+alias darken="sed -i s'/"tokyonight-light"/"tokyonight-night"/' $home_path/.config/nvim/lua/plugins/astroui.lua"
 EOF
 
 # Customize tmux
-cat <<EOF >"$my_username/.tmux.conf"
+cat <<EOF >"$home_path/.tmux.conf"
 # Set prefix to C-Space
 unbind C-b
 set -g prefix C-Space
@@ -130,7 +122,7 @@ run '~/.tmux/plugins/tpm/tpm'
 EOF
 
 # Configure zoxide
-echo 'eval "$(zoxide init zsh)"' >>$my_username/.zshrc
+echo 'eval "$(zoxide init zsh)"' >>$home_path/.zshrc
 . "$HOME/.cargo/env"
 
 # Install Treesitter for nvim
@@ -155,29 +147,29 @@ tar xf lazygit.tar.gz lazygit
 sudo install lazygit -D -t /usr/local/bin/
 
 # Delete any existing nvim config
-rm -rf $my_username/.config/nvim
+rm -rf $home_path/.config/nvim
 
 # Install astrovim config
-git clone --depth 1 https://github.com/AstroNvim/template $my_username/.config/nvim
+git clone --depth 1 https://github.com/AstroNvim/template $home_path/.config/nvim
 
 # remove template's git connection to set up your own later
-rm -rf $my_username/.config/nvim/.git
+rm -rf $home_path/.config/nvim/.git
 
 # Configure git
 git config --global user.name "davidthegardens"
 git config --global user.email "github.matador258@passmail.net"
 
 # Change zsh preferences
-sed -i s'/plugins=(git)/plugins=(git ssh ubuntu vi-mode zsh-syntax-highlighting zsh-autosuggestions zsh-autocomplete)/' $my_username/.zshrc
-sed -i s'/"robbyrussell"/bira/' $my_username/.zshrc
+sed -i s'/plugins=(git)/plugins=(git ssh ubuntu vi-mode zsh-syntax-highlighting zsh-autosuggestions zsh-autocomplete)/' $home_path/.zshrc
+sed -i s'/"robbyrussell"/bira/' $home_path/.zshrc
 
 # Change astrovim theme to tokyo night
-sed -i '1d' $my_username/.config/nvim/lua/community.lua
-sed -i '1d' $my_username/.config/nvim/lua/plugins/astroui.lua
+sed -i '1d' $home_path/.config/nvim/lua/community.lua
+sed -i '1d' $home_path/.config/nvim/lua/plugins/astroui.lua
 
 sed -i s'/{ import = "astrocommunity.pack.lua" },/{ import = "astrocommunity.pack.lua" },\
   {import = "astrocommunity.colorscheme.tokyonight-nvim"},\
-  { import = "astrocommunity.recipes.cache-colorscheme" },/' $my_username/.config/nvim/lua/community.lua
-sed -i s'/"astrodark"/"tokyonight-night", -- use tokyonight-light for a lightmode/' $my_username/.config/nvim/lua/plugins/astroui.lua
-sed -i '1d' $my_username/.bashrc
+  { import = "astrocommunity.recipes.cache-colorscheme" },/' $home_path/.config/nvim/lua/community.lua
+sed -i s'/"astrodark"/"tokyonight-night", -- use tokyonight-light for a lightmode/' $home_path/.config/nvim/lua/plugins/astroui.lua
+sed -i '1d' $home_path/.bashrc
 exit

@@ -1,8 +1,9 @@
 #!/bin/bash
-
-lxc launch ubuntu:n $1
+# Use: send-setup.sh [optional: container name] [optional: remote:container_id]
+lxcname=${1:-"ocelot"}
+container=${1:-"ubuntu:n"}
+lxc launch $container $lxcname
 wait $!
-lxcname=$1
 LOCATIONNAME="/var/snap/lxd/common/lxd/containers/${lxcname}/rootfs/home/ubuntu"
 KEYFILELOCATION="/home/d/.ssh/container-${lxcname}"
 rm -rf $LOCATIONNAME/container-setup-script
