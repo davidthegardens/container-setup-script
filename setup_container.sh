@@ -47,6 +47,7 @@ alias vi="nvim"
 export EDITOR="nvim"
 alias lighten="sed -i s'/"tokyonight-night"/"tokyonight-light"/' $home_path/.config/nvim/lua/plugins/astroui.lua"
 alias darken="sed -i s'/"tokyonight-light"/"tokyonight-night"/' $home_path/.config/nvim/lua/plugins/astroui.lua"
+alias gcp="git add. && git commit -m 'routine commit' && git push"
 EOF
 
 # Customize tmux
@@ -60,7 +61,7 @@ bind C-Space send-prefix
 set -s escape-time 0
 
 # Set the default shell to be a login shell
-set-option -g default-command "/bin/bash -l"
+set-option -g default-command "zsh"
 
 # Force tmux to get the DISPLAY variable from the SSH session
 set-option -g update-environment "DISPLAY"
