@@ -3,6 +3,9 @@
 lxcname=${1:-"ocelot"}
 container=${2:-"ubuntu:n"}
 
+LOCATIONNAME="/var/snap/lxd/common/lxd/containers/${lxcname}/rootfs/home/ubuntu"
+KEYFILELOCATION="/home/d/.ssh/container-${lxcname}"
+
 hasBuiltOcelot="false"
 while IFS=',' read -r first_column rest_of_line; do
 	if [[ "$first_column" == "ocelot-2.0.0" ]]; then
@@ -18,8 +21,6 @@ if [[ "$hasBuiltOcelot" == "true" ]]; then
 else
 	lxc launch $container $lxcname
 	wait $!
-	LOCATIONNAME="/var/snap/lxd/common/lxd/containers/${lxcname}/rootfs/home/ubuntu"
-	KEYFILELOCATION="/home/d/.ssh/container-${lxcname}"
 	rm -rf $LOCATIONNAME/container-setup-script
 	git clone --depth 1 https://github.com/davidthegardens/container-setup-script.git $LOCATIONNAME/container-setup-script
 	sudo touch $LOCATIONNAME/.bashrc
