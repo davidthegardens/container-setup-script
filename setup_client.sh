@@ -7,11 +7,13 @@ hasBuiltOcelot="false"
 lxc image list -f csv | while IFS=',' read -r first_column rest_of_line; do
 	if [[ "$first_column" == "ocelot-2.0.0" ]]; then
 		hasBuiltOcelot="true"
+		echo "$first_column"
 		exit 0
 	fi
 done
+echo "hasBuiltOcelot = ${hasBuiltOcelot}"
 
-if [hasBuiltOcelot="true"]; then
+if [hasBuiltOcelot == "true"]; then
 	lxc launch "ocelot-2.0.0" $lxcname
 else
 	lxc launch $container $lxcname
