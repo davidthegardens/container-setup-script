@@ -8,7 +8,7 @@ lxc image list -f csv | while IFS=',' read -r first_column rest_of_line; do
 	if [[ "$first_column" == "ocelot-2.0.0" ]]; then
 		hasBuiltOcelot="true"
 		echo "$first_column"
-		exit 0
+		break
 	fi
 done
 echo "hasBuiltOcelot = ${hasBuiltOcelot}"
