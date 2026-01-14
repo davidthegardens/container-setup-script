@@ -32,7 +32,9 @@ touch "${LOCATIONNAME}/.ssh/authorized_keys"
 cat "${KEYFILELOCATION}.pub" >>"${LOCATIONNAME}/.ssh/authorized_keys"
 ip_addr_unfmt=$(lxc exec $lxcname -- ip addr show eth0 | grep "inet\b" | awk '{print $2}')
 ip_addr="${ip_addr_unfmt:0:-3}"
-lxc exec $lxcname -- sudo -u ubuntu bash
+if [[ "$hasBuiltOcelot" == "true" ]]; then
+	lxc exec $lxcname -- sudo -u ubuntu bash
+fi
 
 cat <<EOF >>/home/d/.ssh/config
 
@@ -48,3 +50,4 @@ Host ${lxcname}
 EOF
 
 sudo -u d ssh-keyscan $ip_addr >>/home/d/.ssh/known_hosts
+ssh $lxcname
