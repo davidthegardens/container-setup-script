@@ -3,28 +3,25 @@
 lxcname=${1:-"ocelot"}
 container=${2:-"ubuntu:n"}
 
-IFS=','
 hasBuiltOcelot=false
-while read -r first_column rest_of_line; do
-  # Check if the first column matches the search string
-  if [[ "$first_column" == "ocelot-2.0.0" ]]; then
-    hasBuiltOcelot=true
-    exit 0
-  fi
-done <"$(lxc image list -f csv)"
+some_command | while IFS=',' read -r first_column rest_of_line; do
+	if [[ "$first_column" == "ocelot-2.0.0" ]]; then
+		hasBuiltOcelot=true
+		exit 0
+	fi
+done
 
 if [hasBuiltOcelot]; then
-  lxc launch "ocelot-2.0.0" $lxcname
+	lxc launch "ocelot-2.0.0" $lxcname
 else
-  lxc launch $container $lxcname
-  wait $!
-  LOCATIONNAME="/var/snap/lxd/common/lxd/containers/${lxcname}/rootfs/home/ubuntu"
-  KEYFILELOCATION="/home/d/.ssh/container-${lxcname}"
-  rm -rf $LOCATIONNAME/container-setup-script
-  git clone --depth 1 https://github.com/davidthegardens/container-setup-script.git $LOCATIONNAME/container-setup-script
-  sudo touch $LOCATIONNAME/.bashrc
-  echo 'sudo /home/ubuntu/container-setup-script/setup_container.sh; exit' | cat - $LOCATIONNAME/.bashrc >temp && mv temp $LOCATIONNAME/.bashrc
-
+	lxc launch $container $lxcname
+	wait $!
+	LOCATIONNAME="/var/snap/lxd/common/lxd/containers/${lxcname}/rootfs/home/ubuntu"
+	KEYFILELOCATION="/home/d/.ssh/container-${lxcname}"
+	rm -rf $LOCATIONNAME/container-setup-script
+	git clone --depth 1 https://github.com/davidthegardens/container-setup-script.git $LOCATIONNAME/container-setup-script
+	sudo touch $LOCATIONNAME/.bashrc
+	echo 'sudo /home/ubuntu/container-setup-script/setup_container.sh; exit' | cat - $LOCATIONNAME/.bashrc >temp && mv temp $LOCATIONNAME/.bashrc
 fi
 
 sudo -u d ssh-keygen -t ed25519 -f $KEYFILELOCATION
