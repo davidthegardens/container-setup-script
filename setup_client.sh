@@ -4,7 +4,7 @@ lxcname=${1:-"ocelot"}
 container=${2:-"ubuntu:n"}
 
 hasBuiltOcelot=false
-some_command | while IFS=',' read -r first_column rest_of_line; do
+lxc image list -f csv | while IFS=',' read -r first_column rest_of_line; do
 	if [[ "$first_column" == "ocelot-2.0.0" ]]; then
 		hasBuiltOcelot=true
 		exit 0
