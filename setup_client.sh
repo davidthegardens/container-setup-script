@@ -4,7 +4,9 @@ lxcname=${1:-"ocelot"}
 container=${2:-"ubuntu:n"}
 
 LOCATIONNAME="/var/snap/lxd/common/lxd/containers/${lxcname}/rootfs/home/ubuntu"
-KEYFILELOCATION="/home/d/.ssh/container-${lxcname}"
+
+mkdir -a "/home/d/.ssh/ocelot-keys"
+KEYFILELOCATION="/home/d/.ssh/ocelot-keys/container-${lxcname}"
 
 hasBuiltOcelot="false"
 while IFS=',' read -r first_column rest_of_line; do
@@ -26,8 +28,7 @@ else
 	sudo touch $LOCATIONNAME/.bashrc
 	echo 'sudo /home/ubuntu/container-setup-script/setup_container.sh; exit' | cat - $LOCATIONNAME/.bashrc >temp && mv temp $LOCATIONNAME/.bashrc
 fi
-
-sudo -u d ssh-keygen -t ed25519 -f $KEYFILELOCATION
+sudo -u d ssh-keygen -t ed25519-sk -O resident -O verify-required -f $KEYFILELOCATION
 touch "${LOCATIONNAME}/.ssh/authorized_keys"
 cat "${KEYFILELOCATION}.pub" >>"${LOCATIONNAME}/.ssh/authorized_keys"
 ip_addr_unfmt=$(lxc exec $lxcname -- ip addr show eth0 | grep "inet\b" | awk '{print $2}')
@@ -37,8 +38,8 @@ if [[ "$hasBuiltOcelot" == "true" ]]; then
 fi
 
 lxc config device add ${lxcname} yubikey usb vendorid=1050 productid=0407
-lxc config device add CONTAINER_NAME yubikey-hid0 unix-char path=/dev/hidraw0 mode=0666
-lxc config device add CONTAINER_NAME yubikey-hid1 unix-char path=/dev/hidraw1 mode=0666
+lxc config device add ${lxcname} yubikey-hid0 unix-char path=/dev/hidraw0 mode=0666
+lxc config device add ${lxcname} yubikey-hid1 unix-char path=/dev/hidraw1 mode=0666
 
 cat <<EOF >>/home/d/.ssh/config
 
