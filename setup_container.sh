@@ -9,6 +9,8 @@ cd $home_path
 # Add fastfetch ppa
 add-apt-repository -y ppa:zhangsongcui3371/fastfetch
 
+ssh-keygen -t ed25519-sk -O resident -O verify-required -C "spam@davidthegardens.com"
+
 # Install packages
 apt update && apt upgrade -y
 apt install -y wl-clipboard zip zoxide tmux fastfetch curl libssl-dev build-essential zsh bat entr python3 nodejs npm ripgrep fzf openssh-server
