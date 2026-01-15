@@ -20,7 +20,7 @@ apt install ./fastfetch-linux-amd64.deb
 # Install packages
 echo -e "${GREEN} Installing updating apt and installing packages"${RESET}
 apt update && apt upgrade -y
-apt install -y wl-clipboard zip zoxide tmux fastfetch curl libssl-dev build-essential zsh bat entr python3 nodejs npm ripgrep fzf openssh-server
+apt install -y wl-clipboard zip zoxide tmux fastfetch curl libssl-dev build-essential libclang-dev zsh bat entr python3 nodejs npm ripgrep fzf openssh-server
 snap install nvim --classic
 
 # Install TPM for tmux
