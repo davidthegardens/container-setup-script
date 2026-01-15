@@ -5,7 +5,8 @@ container=${2:-"ubuntu:n"}
 
 LOCATIONNAME="/var/snap/lxd/common/lxd/containers/${lxcname}/rootfs/home/ubuntu"
 
-mkdir -p "/home/d/.ssh/ocelot-keys"
+sudo -u d mkdir -p "/home/d/.ssh/ocelot-keys"
+sudo chown d "/home/d/.ssh/ocelot-keys"
 KEYFILELOCATION="/home/d/.ssh/ocelot-keys/container-${lxcname}"
 
 hasBuiltOcelot="false"
