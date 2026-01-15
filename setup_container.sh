@@ -3,15 +3,16 @@ echo "${GREEN} Creating and configuring directories"
 my_username=ubuntu
 home_path=/home/$my_username
 GREEN="\e[0;36m"
+RESET="\e[0m"
 ZSH_CUSTOM=$home_path/.oh-my-zsh/custom
 sudo -u $my_username echo $ZSH_CUSTOM
 sudo chown -R $my_username $home_path
 cd $home_path
 
 # Add fastfetch ppa
-echo -e "${GREEN} Installing fastfetch"
+echo -e "${GREEN} Installing fastfetch ${RESET}"
 wget "https://github.com/fastfetch-cli/fastfetch/releases/download/2.57.1/fastfetch-linux-amd64.deb"
-apt install fastfetch-linux-amd64.deb
+apt install ./fastfetch-linux-amd64.deb
 
 # echo "${GREEN} Setting github ssh login with Yubikey"
 # ssh-keygen -t ed25519-sk -O resident -O verify-required -C "spam@davidthegardens.com"
