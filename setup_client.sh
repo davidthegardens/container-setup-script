@@ -27,6 +27,7 @@ else
 	rm -rf $LOCATIONNAME/container-setup-script
 	git clone --depth 1 https://github.com/davidthegardens/container-setup-script.git $LOCATIONNAME/container-setup-script
 	sudo touch $LOCATIONNAME/.bashrc
+	cp -R "/home/d/.ssh/gh-login" $LOCATIONNAME/.ssh/
 	echo 'sudo /home/ubuntu/container-setup-script/setup_container.sh; exit' | cat - $LOCATIONNAME/.bashrc >temp && mv temp $LOCATIONNAME/.bashrc
 fi
 
