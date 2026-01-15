@@ -16,9 +16,6 @@ apt update && apt upgrade -y
 apt install -y wl-clipboard zip zoxide tmux fastfetch curl libssl-dev build-essential zsh bat entr python3 nodejs npm ripgrep fzf openssh-server
 snap install nvim --classic
 
-# Install Git Credential Manager
-wget https://github.com/git-ecosystem/git-credential-manager/releases/download/v2.6.1/gcm-linux_amd64.2.6.1.deb
-
 # Install TPM for tmux
 git clone https://github.com/tmux-plugins/tpm $home_path/.tmux/plugins/tpm
 sudo chmod 777 $home_path/.tmux/plugins

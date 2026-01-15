@@ -30,15 +30,13 @@ else
 	echo 'sudo /home/ubuntu/container-setup-script/setup_container.sh; exit' | cat - $LOCATIONNAME/.bashrc >temp && mv temp $LOCATIONNAME/.bashrc
 fi
 
-sudo -u d ssh-keygen -t ed25519-sk -O resident -O verify-required -C "mail@davidthegardens.com" -f $KEYFILELOCATION
-eval "$(ssh-agent -s)"
-ssh-add $KEYFILELOCATION
+sudo -u d ssh-keygen -t ed25519-sk -O resident -O verify-required -O application=ssh:${lxcname} -C "mail@davidthegardens.com" -f $KEYFILELOCATION
 
 touch "${LOCATIONNAME}/.ssh/authorized_keys"
 cat "${KEYFILELOCATION}.pub" >>"${LOCATIONNAME}/.ssh/authorized_keys"
 ip_addr_unfmt=$(lxc exec $lxcname -- ip addr show eth0 | grep "inet\b" | awk '{print $2}')
 ip_addr="${ip_addr_unfmt:0:-3}"
-if [[ "$hasBuiltOcelot" == "true" ]]; then
+if [[ "$hasBuiltOcelot" == "false" ]]; then
 	lxc exec $lxcname -- sudo -u ubuntu bash
 fi
 
@@ -49,12 +47,13 @@ lxc config device add ${lxcname} yubikey-hid1 unix-char path=/dev/hidraw1 mode=0
 cat <<EOF >>/home/d/.ssh/config
 
 Host ${lxcname}
-  IdentityFile ${KEYFILELOCATION}.pub
+  IdentityFile ${KEYFILELOCATION}
   Hostname ${ip_addr}
   User ubuntu
   LocalForward 3000 localhost:3000
   ServerAliveInterval 3600
   ForwardX11 yes
+  IdentityAgent none
   SetEnv TERM=xterm-256color
 
 EOF
