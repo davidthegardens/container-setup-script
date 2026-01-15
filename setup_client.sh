@@ -28,7 +28,11 @@ else
 	sudo touch $LOCATIONNAME/.bashrc
 	echo 'sudo /home/ubuntu/container-setup-script/setup_container.sh; exit' | cat - $LOCATIONNAME/.bashrc >temp && mv temp $LOCATIONNAME/.bashrc
 fi
-sudo -u d ssh-keygen -t ed25519-sk -O resident -O verify-required -f $KEYFILELOCATION
+
+sudo -u d ssh-keygen -t ed25519-sk -O resident -O verify-required -C "mail@davidthegardens.com" -f $KEYFILELOCATION
+eval "$(ssh-agent -s)"
+ssh-add $KEYFILELOCATION
+
 touch "${LOCATIONNAME}/.ssh/authorized_keys"
 cat "${KEYFILELOCATION}.pub" >>"${LOCATIONNAME}/.ssh/authorized_keys"
 ip_addr_unfmt=$(lxc exec $lxcname -- ip addr show eth0 | grep "inet\b" | awk '{print $2}')
