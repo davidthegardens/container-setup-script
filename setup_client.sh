@@ -36,6 +36,10 @@ if [[ "$hasBuiltOcelot" == "true" ]]; then
 	lxc exec $lxcname -- sudo -u ubuntu bash
 fi
 
+lxc config device add ${lxcname} yubikey usb vendorid=1050 productid=0407
+lxc config device add CONTAINER_NAME yubikey-hid0 unix-char path=/dev/hidraw0 mode=0666
+lxc config device add CONTAINER_NAME yubikey-hid1 unix-char path=/dev/hidraw1 mode=0666
+
 cat <<EOF >>/home/d/.ssh/config
 
 Host ${lxcname}
