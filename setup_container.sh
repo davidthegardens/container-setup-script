@@ -18,36 +18,36 @@ apt install ./fastfetch-linux-amd64.deb
 # ssh-keygen -t ed25519-sk -O resident -O verify-required -C "spam@davidthegardens.com"
 
 # Install packages
-echo -e "${GREEN} Installing updating apt and installing packages"
+echo -e "${GREEN} Installing updating apt and installing packages"${RESET}
 apt update && apt upgrade -y
 apt install -y wl-clipboard zip zoxide tmux fastfetch curl libssl-dev build-essential zsh bat entr python3 nodejs npm ripgrep fzf openssh-server
 snap install nvim --classic
 
 # Install TPM for tmux
-echo -e "${GREEN} Installing tpm for tmux"
+echo -e "${GREEN} Installing tpm for tmux"${RESET}
 git clone https://github.com/tmux-plugins/tpm $home_path/.tmux/plugins/tpm
 sudo chmod 777 $home_path/.tmux/plugins
 
 # Install rust
-echo -e "${GREEN} Installing rust"
+echo -e "${GREEN} Installing rust"${RESET}
 curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain stable -y
 
 # Start ssh server on boot
-echo -e "${GREEN} Configuring and starting ssh"
+echo -e "${GREEN} Configuring and starting ssh"${RESET}
 sudo systemctl start ssh && sudo systemctl enable ssh
 
 # Install oh-my-zsh
-echo -e "${GREEN} Installing oh my zsh"
+echo -e "${GREEN} Installing oh my zsh"${RESET}
 sudo -u $my_username sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 
 # Install zsh plugins
-echo -e "${GREEN} Installing oh my zsh plugins"
+echo -e "${GREEN} Installing oh my zsh plugins"${RESET}
 sudo -u $my_username git clone https://github.com/zsh-users/zsh-autosuggestions.git $ZSH_CUSTOM/plugins/zsh-autosuggestions
 sudo -u $my_username git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $ZSH_CUSTOM/plugins/zsh-syntax-highlighting
 sudo -u $my_username git clone --depth 1 -- https://github.com/marlonrichert/zsh-autocomplete.git $ZSH_CUSTOM/plugins/zsh-autocomplete
 
 # Add zsh customization
-echo -e "${GREEN} Configuring .zshrc"
+echo -e "${GREEN} Configuring .zshrc"${RESET}
 cat <<EOF >>$home_path/.zshrc
 alias cat="batcat"
 alias cd="z"
@@ -136,16 +136,16 @@ run '~/.tmux/plugins/tpm/tpm'
 EOF
 
 # Configure zoxide
-echo -e "${GREEN} Configuring zoxide"
+echo -e "${GREEN} Configuring zoxide"${RESET}
 echo 'eval "$(zoxide init zsh)"' >>$home_path/.zshrc
 . "$HOME/.cargo/env"
 
 # Install Treesitter for nvim
-echo -e "${GREEN} Installing treesitty for nvim"
+echo -e "${GREEN} Installing treesitty for nvim"${RESET}
 cargo install --locked tree-sitter-cli
 
 # Install disk analyzer
-echo -e "${GREEN} Installing process analyzers for astrovim"
+echo -e "${GREEN} Installing process analyzers for astrovim"${RESET}
 curl -L https://github.com/dundee/gdu/releases/latest/download/gdu_linux_amd64.tgz | tar xz
 chmod +x gdu_linux_amd64
 mv gdu_linux_amd64 /usr/bin/gdu
@@ -155,37 +155,37 @@ curl -LO https://github.com/ClementTsang/bottom/releases/download/0.11.4/bottom_
 sudo dpkg -i bottom_0.11.4-1_amd64.deb
 
 # Install NVM
-echo -e "${GREEN} Installing nvm"
+echo -e "${GREEN} Installing nvm"${RESET}
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash
 
 # Install lazygit
-echo -e "${GREEN} Installing lazygit"
+echo -e "${GREEN} Installing lazygit"${RESET}
 LAZYGIT_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | \grep -Po '"tag_name": *"v\K[^"]*')
 curl -Lo lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/download/v${LAZYGIT_VERSION}/lazygit_${LAZYGIT_VERSION}_Linux_x86_64.tar.gz"
 tar xf lazygit.tar.gz lazygit
 sudo install lazygit -D -t /usr/local/bin/
 
 # Delete any existing nvim config
-echo -e "${GREEN} Deleting old nvim configs"
+echo -e "${GREEN} Deleting old nvim configs"${RESET}
 rm -rf $home_path/.config/nvim
 
 # Install astrovim config
-echo -e "${GREEN} Install astrovim"
+echo -e "${GREEN} Install astrovim"${RESET}
 git clone --depth 1 https://github.com/AstroNvim/template $home_path/.config/nvim
 rm -rf $home_path/.config/nvim/.git
 
 # Configure git
-echo -e "${GREEN} Configuring git"
+echo -e "${GREEN} Configuring git"${RESET}
 git config --global user.name "davidthegardens"
 git config --global user.email "github.matador258@passmail.net"
 
 # Change zsh preferences
-echo -e "${GREEN} Changing zsh preferences"
+echo -e "${GREEN} Changing zsh preferences"${RESET}
 sed -i s'/plugins=(git)/plugins=(git ssh ubuntu vi-mode zsh-syntax-highlighting zsh-autosuggestions zsh-autocomplete)/' $home_path/.zshrc
 sed -i s'/"robbyrussell"/bira/' $home_path/.zshrc
 
 # Change astrovim theme to tokyo night
-echo -e "${GREEN} Setting neovim theme"
+echo -e "${GREEN} Setting neovim theme"${RESET}
 sed -i '1d' $home_path/.config/nvim/lua/community.lua
 sed -i '1d' $home_path/.config/nvim/lua/plugins/astroui.lua
 
