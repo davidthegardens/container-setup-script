@@ -46,8 +46,13 @@ fi
 lxc config device add ${lxcname} yubikey usb vendorid=1050 productid=0407
 lxc config device add ${lxcname} yubikey-hid0 unix-char path=/dev/hidraw0 mode=0666
 lxc config device add ${lxcname} yubikey-hid1 unix-char path=/dev/hidraw1 mode=0666
-lxc config device add "$lxcname" ssh-agent proxy connect="unix:${SSH_AUTH_SOCK}" listen="unix:/tmp/host-ssh-agent.sock" bind=container uid=1000 gid=1000 mode=0600
-lxc config device add "$lxcname" ssh-dir disk source="${HOME}/.ssh" path="/home/ubuntu/.ssh"
+
+echo "testing auth sock visibility"
+echo "$SSH_AUTH_SOCK"
+sudo -u d echo "$SSH_AUTH_SOCK"
+
+lxc config device add ${lxcname} ssh-agent proxy connect="unix:${SSH_AUTH_SOCK}" listen="unix:/tmp/host-ssh-agent.sock" bind=container uid=1000 gid=1000 mode=0600
+lxc config device add ${lxcname} ssh-dir disk source="${HOME}/.ssh" path="/home/ubuntu/.ssh"
 
 cat <<EOF >>/home/d/.ssh/config
 
