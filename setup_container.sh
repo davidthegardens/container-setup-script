@@ -59,7 +59,7 @@ alias vi="nvim"
 export EDITOR="nvim"
 alias lighten="sed -i s'/"tokyonight-night"/"tokyonight-light"/' $home_path/.config/nvim/lua/plugins/astroui.lua"
 alias darken="sed -i s'/"tokyonight-light"/"tokyonight-night"/' $home_path/.config/nvim/lua/plugins/astroui.lua"
-alias gcp="git add. && git commit -m 'routine commit' && git push"
+alias gcp="git add . && git commit -m 'routine commit' && git push"
 export SSH_AUTH_SOCK=/tmp/host-ssh-agent.sock
 EOF
 
