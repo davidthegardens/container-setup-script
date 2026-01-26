@@ -31,7 +31,10 @@ else
 	echo 'sudo /home/ubuntu/container-setup-script/setup_container.sh; exit' | cat - $LOCATIONNAME/.bashrc >temp && mv temp $LOCATIONNAME/.bashrc
 fi
 
-sudo -u d ssh-keygen -t ed25519-sk -O resident -O verify-required -O application=ssh:${lxcname} -C "mail@davidthegardens.com" -f $KEYFILELOCATION
+lxc config device add "$lxcname" ssh-agent proxy connect="unix:${SSH_AUTH_SOCK}" listen="unix:/tmp/host-ssh-agent.sock" bind=container uid=1000 gid=1000 mode=0600
+lxc config device add "$lxcname" ssh-dir disk source="${HOME}/.ssh" path="/home/ubuntu/.ssh"
+
+# sudo -u d ssh-keygen -t ed25519-sk -O resident -O verify-required -O application=ssh:${lxcname} -C "mail@davidthegardens.com" -f $KEYFILELOCATION
 
 touch "${LOCATIONNAME}/.ssh/authorized_keys"
 cat "${KEYFILELOCATION}.pub" >>"${LOCATIONNAME}/.ssh/authorized_keys"

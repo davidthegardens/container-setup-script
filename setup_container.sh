@@ -20,7 +20,7 @@ apt install ./fastfetch-linux-amd64.deb
 # Install packages
 echo -e "${GREEN} Installing updating apt and installing packages"${RESET}
 apt update && apt upgrade -y
-apt install -y wl-clipboard zip zoxide tmux fastfetch curl libssl-dev build-essential libclang-dev zsh bat entr python3 nodejs npm ripgrep fzf openssh-server
+apt install -y wl-clipboard zip zoxide tmux fastfetch curl libssl-dev build-essential libclang-dev zsh bat entr python3 nodejs npm ripgrep fzf openssh-server python3.12-venv
 snap install nvim --classic
 
 # Install TPM for tmux
@@ -60,6 +60,7 @@ export EDITOR="nvim"
 alias lighten="sed -i s'/"tokyonight-night"/"tokyonight-light"/' $home_path/.config/nvim/lua/plugins/astroui.lua"
 alias darken="sed -i s'/"tokyonight-light"/"tokyonight-night"/' $home_path/.config/nvim/lua/plugins/astroui.lua"
 alias gcp="git add. && git commit -m 'routine commit' && git push"
+export SSH_AUTH_SOCK=/tmp/host-ssh-agent.sock
 EOF
 
 # Customize tmux
