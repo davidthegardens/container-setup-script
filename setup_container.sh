@@ -177,9 +177,9 @@ rm -rf $home_path/.config/nvim/.git
 
 # Configure git
 echo -e "${GREEN} Configuring git"${RESET}
-git config --global user.name "davidthegardens"
-git config --global user.email "github.matador258@passmail.net"
-cat >>~/.ssh/config <<EOF
+sudo -u ubuntu git config --global user.name "davidthegardens"
+sudo -u ubuntu git config --global user.email "github.matador258@passmail.net"
+cat >>"$home_path/.ssh/config" <<EOF
   Host github.com
     HostName github.com
     User git
