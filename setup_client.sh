@@ -11,7 +11,7 @@ KEYFILELOCATION="/home/d/.ssh/ocelot-keys/container-${lxcname}"
 
 hasBuiltOcelot="false"
 while IFS=',' read -r first_column rest_of_line; do
-	if [[ "$first_column" == "ocelot-2.0.0" ]]; then
+	if [[ "$first_column" == "$prebuild" ]]; then
 		hasBuiltOcelot="true"
 		echo "$first_column"
 		break
