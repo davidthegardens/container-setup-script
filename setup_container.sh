@@ -179,6 +179,13 @@ rm -rf $home_path/.config/nvim/.git
 echo -e "${GREEN} Configuring git"${RESET}
 git config --global user.name "davidthegardens"
 git config --global user.email "github.matador258@passmail.net"
+cat >>~/.ssh/config <<EOF
+  Host github.com
+    HostName github.com
+    User git
+    IdentityFile ~/.ssh/github-ssh-key/id_ed25519_sk_git
+    IdentitiesOnly yes
+EOF
 
 # Change zsh preferences
 echo -e "${GREEN} Changing zsh preferences"${RESET}

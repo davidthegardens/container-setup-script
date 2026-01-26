@@ -37,6 +37,7 @@ sudo -u d ssh-keygen -t ed25519-sk -O resident -O verify-required -O application
 
 touch "${LOCATIONNAME}/.ssh/authorized_keys"
 cat "${KEYFILELOCATION}.pub" >>"${LOCATIONNAME}/.ssh/authorized_keys"
+
 ip_addr_unfmt=$(lxc exec $lxcname -- ip addr show eth0 | grep "inet\b" | awk '{print $2}')
 ip_addr="${ip_addr_unfmt:0:-3}"
 if [[ "$hasBuiltOcelot" == "false" ]]; then
@@ -47,13 +48,8 @@ lxc config device add ${lxcname} yubikey usb vendorid=1050 productid=0407
 lxc config device add ${lxcname} yubikey-hid0 unix-char path=/dev/hidraw0 mode=0666
 lxc config device add ${lxcname} yubikey-hid1 unix-char path=/dev/hidraw1 mode=0666
 
-echo "testing auth sock visibility"
-echo "$SSH_AUTH_SOCK"
-sudo -u d echo "$SSH_AUTH_SOCK"
-
 lxc config device add ${lxcname} ssh-agent proxy connect="unix:${SSH_AUTH_SOCK}" listen="unix:/tmp/host-ssh-agent.sock" bind=container uid=1000 gid=1000 mode=0600
-lxc config device add ${lxcname} ssh-dir disk source="${HOME}/.ssh" path="/home/ubuntu/.ssh"
-
+lxc config device add ${lxcname} github-ssh-key disk source="${HOME}/.ssh/github-ssh-key" path="/home/ubuntu/.ssh/github-ssh-key"
 cat <<EOF >>/home/d/.ssh/config
 
 Host ${lxcname}
