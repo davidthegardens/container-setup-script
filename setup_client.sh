@@ -2,7 +2,7 @@
 # Use: send-setup.sh [optional: container name] [optional: remote:container_id]
 lxcname=${1:-"ocelot"}
 container=${2:-"ubuntu:n"}
-
+prebuild="ocelot-2.0.1"
 LOCATIONNAME="/var/snap/lxd/common/lxd/containers/${lxcname}/rootfs/home/ubuntu"
 
 sudo -u d mkdir -p "/home/d/.ssh/ocelot-keys"
@@ -20,7 +20,7 @@ done < <(lxc image list -f csv)
 echo "hasBuiltOcelot = ${hasBuiltOcelot}"
 
 if [[ "$hasBuiltOcelot" == "true" ]]; then
-	lxc launch "ocelot-2.0.0" $lxcname
+	lxc launch "$prebuild" $lxcname
 else
 	lxc launch $container $lxcname
 	wait $!
