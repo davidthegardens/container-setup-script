@@ -40,7 +40,7 @@ sudo systemctl start ssh && sudo systemctl enable ssh
 
 # Install oh-my-zsh
 echo -e "${GREEN} Installing oh my zsh"${RESET}
-sudo -u $my_username sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+sudo -u $my_username sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
 
 # Install zsh plugins
 echo -e "${GREEN} Installing oh my zsh plugins"${RESET}

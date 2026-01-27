@@ -46,8 +46,6 @@ fi
 
 sudo -u d ssh-keygen -t ed25519-sk -O resident -O verify-required -O application=ssh:${lxcname} -C "mail@davidthegardens.com" -f $KEYFILELOCATION
 
-# sudo -u d ssh-keygen -t ed25519-sk -O resident -O verify-required -O application=ssh:${lxcname} -C "mail@davidthegardens.com" -f $KEYFILELOCATION
-
 touch "${LOCATIONNAME}/.ssh/authorized_keys"
 cat "${KEYFILELOCATION}.pub" >>"${LOCATIONNAME}/.ssh/authorized_keys"
 
