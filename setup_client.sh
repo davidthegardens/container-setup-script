@@ -55,11 +55,13 @@ if [[ "$hasBuiltOcelot" == "false" ]]; then
 	lxc exec $lxcname -- sudo -u ubuntu bash
 fi
 
-lxc config device add ${lxcname} yubikey usb vendorid=1050 productid=0407
-lxc config device add ${lxcname} yubikey-hid0 unix-char path=/dev/hidraw0 mode=0666
-lxc config device add ${lxcname} yubikey-hid1 unix-char path=/dev/hidraw1 mode=0666
+lxc config device add testauth13 yubikey-fido unix-char \
+	source=/dev/hidraw2 \
+	path=/dev/hidraw2 \
+	uid=1000 \
+	gid=1000 \
+	mode=0666
 
-lxc config device add ${lxcname} ssh-agent proxy connect="unix:/home/d/.ssh/agent.sock" listen="unix:/home/ubuntu/.ssh/agent.sock" bind=container uid=1000 gid=1000 mode=0600
 cat <<EOF >>/home/d/.ssh/config
 
 Host ${lxcname}
