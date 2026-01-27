@@ -27,7 +27,20 @@ else
 	rm -rf $LOCATIONNAME/container-setup-script
 	git clone --depth 1 https://github.com/davidthegardens/container-setup-script.git $LOCATIONNAME/container-setup-script
 	sudo touch $LOCATIONNAME/.bashrc
-	cp -R "/home/d/.ssh/github-ssh-key" $LOCATIONNAME/.ssh/github-ssh-key
+
+	lxc exec ${lxcname} -- mkdir -p /home/ubuntu/.ssh/github-ssh-key
+
+	lxc file push -p --uid 1000 --gid 1000 \
+		/home/d/.ssh/github-ssh-key/id_ed25519_sk_git \
+		${lxcname}/home/ubuntu/.ssh/github-ssh-key/
+
+	lxc file push -p --uid 1000 --gid 1000 \
+		/home/d/.ssh/github-ssh-key/id_ed25519_sk_git.pub \
+		${lxcname}/home/ubuntu/.ssh/github-ssh-key/
+
+	lxc exec ${lxcname} -- chmod 600 /home/ubuntu/.ssh/github-ssh-key/id_ed25519_sk_git
+	lxc exec ${lxcname} -- chmod 644 /home/ubuntu/.ssh/github-ssh-key/id_ed25519_sk_git.pub
+
 	echo 'sudo /home/ubuntu/container-setup-script/setup_container.sh; exit' | cat - $LOCATIONNAME/.bashrc >temp && mv temp $LOCATIONNAME/.bashrc
 fi
 
@@ -48,7 +61,7 @@ lxc config device add ${lxcname} yubikey usb vendorid=1050 productid=0407
 lxc config device add ${lxcname} yubikey-hid0 unix-char path=/dev/hidraw0 mode=0666
 lxc config device add ${lxcname} yubikey-hid1 unix-char path=/dev/hidraw1 mode=0666
 
-lxc config device add ${lxcname} ssh-agent proxy connect="unix:/home/d/.ssh/agent.sock" listen="unix:/home/d/.ssh/agent.sock" bind=container uid=1000 gid=1000 mode=0600
+lxc config device add ${lxcname} ssh-agent proxy connect="unix:/home/d/.ssh/agent.sock" listen="unix:/home/ubuntu/.ssh/agent.sock" bind=container uid=1000 gid=1000 mode=0600
 cat <<EOF >>/home/d/.ssh/config
 
 Host ${lxcname}
