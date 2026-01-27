@@ -5,6 +5,7 @@ container=${2:-"ubuntu:n"}
 prebuild="ocelot-2.0.1"
 LOCATIONNAME="/var/snap/lxd/common/lxd/containers/${lxcname}/rootfs/home/ubuntu"
 
+
 sudo -u d mkdir -p "/home/d/.ssh/ocelot-keys"
 sudo chown d "/home/d/.ssh/ocelot-keys"
 KEYFILELOCATION="/home/d/.ssh/ocelot-keys/container-${lxcname}"
