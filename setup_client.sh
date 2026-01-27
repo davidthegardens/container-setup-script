@@ -27,7 +27,7 @@ else
 	rm -rf $LOCATIONNAME/container-setup-script
 	git clone --depth 1 https://github.com/davidthegardens/container-setup-script.git $LOCATIONNAME/container-setup-script
 	sudo touch $LOCATIONNAME/.bashrc
-	cp -R "/home/d/.ssh/gh-login" $LOCATIONNAME/.ssh/
+	cp -R "/home/d/.ssh/github-ssh-key" $LOCATIONNAME/.ssh/github-ssh-key
 	echo 'sudo /home/ubuntu/container-setup-script/setup_container.sh; exit' | cat - $LOCATIONNAME/.bashrc >temp && mv temp $LOCATIONNAME/.bashrc
 fi
 
@@ -49,7 +49,6 @@ lxc config device add ${lxcname} yubikey-hid0 unix-char path=/dev/hidraw0 mode=0
 lxc config device add ${lxcname} yubikey-hid1 unix-char path=/dev/hidraw1 mode=0666
 
 lxc config device add ${lxcname} ssh-agent proxy connect="unix:/home/d/.ssh/agent.sock" listen="unix:/home/d/.ssh/agent.sock" bind=container uid=1000 gid=1000 mode=0600
-lxc config device add ${lxcname} github-ssh-key disk source="/home/d/.ssh/github-ssh-key" path="/home/ubuntu/.ssh/github-ssh-key" shift=true
 cat <<EOF >>/home/d/.ssh/config
 
 Host ${lxcname}

@@ -7,6 +7,8 @@ RESET="\e[0m"
 ZSH_CUSTOM=$home_path/.oh-my-zsh/custom
 sudo -u $my_username echo $ZSH_CUSTOM
 sudo chown -R $my_username $home_path
+sudo chown -R $my_username "$home_path/.config"
+
 cd $home_path
 
 # Add fastfetch ppa
@@ -60,7 +62,7 @@ export EDITOR="nvim"
 alias lighten="sed -i s'/"tokyonight-night"/"tokyonight-light"/' $home_path/.config/nvim/lua/plugins/astroui.lua"
 alias darken="sed -i s'/"tokyonight-light"/"tokyonight-night"/' $home_path/.config/nvim/lua/plugins/astroui.lua"
 alias gcp="git add . && git commit -m 'routine commit' && git push"
-export SSH_AUTH_SOCK=/tmp/host-ssh-agent.sock
+export SSH_AUTH_SOCK=$home_path/.ssh/agent.sock
 EOF
 
 # Customize tmux
