@@ -7,7 +7,7 @@ LOCATIONNAME="/var/snap/lxd/common/lxd/containers/${lxcname}/rootfs/home/ubuntu"
 
 sudo -u d mkdir -p "/home/d/.ssh/ocelot-keys"
 sudo chown d "/home/d/.ssh/ocelot-keys"
-KEYFILELOCATION="/home/d/.ssh/ocelot-keys/container-${lxcname}"
+KEYFILELOCATION="/home/d/.ssh/ocelot-container-key"
 
 hasBuiltOcelot="false"
 while IFS=',' read -r first_column rest_of_line; do
@@ -27,24 +27,8 @@ else
 	rm -rf $LOCATIONNAME/container-setup-script
 	git clone --depth 1 https://github.com/davidthegardens/container-setup-script.git $LOCATIONNAME/container-setup-script
 	sudo touch $LOCATIONNAME/.bashrc
-
-	lxc exec ${lxcname} -- mkdir -p /home/ubuntu/.ssh/github-ssh-key
-
-	lxc file push -p --uid 1000 --gid 1000 \
-		/home/d/.ssh/github-ssh-key/id_ed25519_sk_git \
-		${lxcname}/home/ubuntu/.ssh/github-ssh-key/
-
-	lxc file push -p --uid 1000 --gid 1000 \
-		/home/d/.ssh/github-ssh-key/id_ed25519_sk_git.pub \
-		${lxcname}/home/ubuntu/.ssh/github-ssh-key/
-
-	lxc exec ${lxcname} -- chmod 600 /home/ubuntu/.ssh/github-ssh-key/id_ed25519_sk_git
-	lxc exec ${lxcname} -- chmod 644 /home/ubuntu/.ssh/github-ssh-key/id_ed25519_sk_git.pub
-
 	echo 'sudo /home/ubuntu/container-setup-script/setup_container.sh; exit' | cat - $LOCATIONNAME/.bashrc >temp && mv temp $LOCATIONNAME/.bashrc
 fi
-
-sudo -u d ssh-keygen -t ed25519-sk -O resident -O verify-required -O application=ssh:${lxcname} -C "mail@davidthegardens.com" -f $KEYFILELOCATION
 
 touch "${LOCATIONNAME}/.ssh/authorized_keys"
 cat "${KEYFILELOCATION}.pub" >>"${LOCATIONNAME}/.ssh/authorized_keys"
@@ -55,13 +39,6 @@ if [[ "$hasBuiltOcelot" == "false" ]]; then
 	lxc exec $lxcname -- sudo -u ubuntu bash
 fi
 
-lxc config device add testauth13 yubikey-fido unix-char \
-	source=/dev/hidraw2 \
-	path=/dev/hidraw2 \
-	uid=1000 \
-	gid=1000 \
-	mode=0666
-
 cat <<EOF >>/home/d/.ssh/config
 
 Host ${lxcname}
@@ -71,7 +48,8 @@ Host ${lxcname}
   LocalForward 3000 localhost:3000
   ServerAliveInterval 3600
   ForwardX11 yes
-  IdentityAgent none
+  IdentitiesOnly yes
+  ForwardAgent yes
   SetEnv TERM=xterm-256color
 
 EOF
