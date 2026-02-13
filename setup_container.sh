@@ -7,6 +7,7 @@ RESET="\e[0m"
 ZSH_CUSTOM=$home_path/.oh-my-zsh/custom
 sudo -u $my_username echo $ZSH_CUSTOM
 sudo chown -R $my_username $home_path
+sudo mkdir -p "$home_path/.config"
 sudo chown -R $my_username "$home_path/.config"
 
 cd $home_path

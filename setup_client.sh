@@ -30,6 +30,7 @@ else
 	echo 'sudo /home/ubuntu/container-setup-script/setup_container.sh; exit' | cat - $LOCATIONNAME/.bashrc >temp && mv temp $LOCATIONNAME/.bashrc
 fi
 
+sleep 5
 touch "${LOCATIONNAME}/.ssh/authorized_keys"
 cat "${KEYFILELOCATION}.pub" >>"${LOCATIONNAME}/.ssh/authorized_keys"
 
