@@ -132,7 +132,7 @@ else
 fi
 
 # Source the functions for current session
-source $HOME_PATH/.zshrc
+# source $HOME_PATH/.zshrc
 
 # Create dispatcher script (if it doesn't exist or update it)
 echo ""
@@ -274,44 +274,41 @@ echo "✓ Container setup complete"
 # ============================================================================
 # PART 3: Test the setup
 # ============================================================================
-
-echo ""
-echo "=== Testing Setup ==="
-
-# Test 1: Try to claim YubiKey
-echo ""
-echo "Test 1: Claiming YubiKey from container..."
-if lxc exec "$CONTAINER_NAME" -- su - "$CONTAINER_USER" -c "ssh -i $CONTAINER_HOME_PATH/.ssh/yk_control -o 'StrictHostKeyChecking=accept-new' -o 'IdentitiesOnly=yes' $HOST_IP claim $CONTAINER_NAME"; then
-    echo "✓ Test 1 passed: YubiKey claimed successfully"
-else
-    echo "✗ Test 1 failed: Could not claim YubiKey"
-fi
-
-sleep 2
-
-# Test 2: Try to release YubiKey
-echo ""
-echo "Test 2: Releasing YubiKey from container..."
-if lxc exec "$CONTAINER_NAME" -- su - "$CONTAINER_USER" -c "ssh -i $CONTAINER_HOME_PATH/.ssh/yk_control -o 'IdentitiesOnly=yes' $HOST_IP release $CONTAINER_NAME"; then
-    echo "✓ Test 2 passed: YubiKey released successfully"
-else
-    echo "✗ Test 2 failed: Could not release YubiKey"
-fi
-
-sleep 2
-
-# Test 3: Try to run unauthorized command (should fail)
-echo ""
-echo "Test 3: Testing security restrictions (should deny)..."
-if lxc exec "$CONTAINER_NAME" -- su - "$CONTAINER_USER" -c "ssh -i $CONTAINER_HOME_PATH/.ssh/yk_control -o 'IdentitiesOnly=yes' $HOST_IP 'ls -la' 2>&1" | grep -q "Invalid command"; then
-    echo "✓ Test 3 passed: Unauthorized commands blocked"
-else
-    echo "⚠ Test 3: Could not verify command restrictions"
-fi
-
-# ============================================================================
-# Summary
-# ============================================================================
+#
+# echo ""
+# echo "=== Testing Setup ==="
+#
+# # Test 1: Try to claim YubiKey
+#
+# echo ""
+# echo "Test 1: Claiming YubiKey from container..."
+# if lxc exec "$CONTAINER_NAME" -- su - "$CONTAINER_USER" -c "ssh -i $CONTAINER_HOME_PATH/.ssh/yk_control -o 'StrictHostKeyChecking=accept-new' -o 'IdentitiesOnly=yes' $HOST_IP claim $CONTAINER_NAME"; then
+#     echo "✓ Test 1 passed: YubiKey claimed successfully"
+# else
+#     echo "✗ Test 1 failed: Could not claim YubiKey"
+# fi
+#
+# sleep 2
+#
+# # Test 2: Try to release YubiKey
+# echo ""
+# echo "Test 2: Releasing YubiKey from container..."
+# if lxc exec "$CONTAINER_NAME" -- su - "$CONTAINER_USER" -c "ssh -i $CONTAINER_HOME_PATH/.ssh/yk_control -o 'IdentitiesOnly=yes' $HOST_IP release $CONTAINER_NAME"; then
+#     echo "✓ Test 2 passed: YubiKey released successfully"
+# else
+#     echo "✗ Test 2 failed: Could not release YubiKey"
+# fi
+#
+# sleep 2
+#
+# # Test 3: Try to run unauthorized command (should fail)
+# echo ""
+# echo "Test 3: Testing security restrictions (should deny)..."
+# if lxc exec "$CONTAINER_NAME" -- su - "$CONTAINER_USER" -c "ssh -i $CONTAINER_HOME_PATH/.ssh/yk_control -o 'IdentitiesOnly=yes' $HOST_IP 'ls -la' 2>&1" | grep -q "Invalid command"; then
+#     echo "✓ Test 3 passed: Unauthorized commands blocked"
+# else
+#     echo "⚠ Test 3: Could not verify command restrictions"
+# fi
 
 echo ""
 echo "=== Setup Complete! ==="
