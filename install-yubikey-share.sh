@@ -17,6 +17,7 @@ CONTAINER_NAME=$1
 HOST_USER=$2
 CONTAINER_USER=$3
 HOME_PATH="/home/$2/"
+CONTAINER_HOME_PATH="/home/$3"
 
 # Detect container IP
 echo ""
@@ -56,7 +57,7 @@ echo "=== Setting up HOST ==="
 mkdir -p $HOME_PATH/bin
 
 # Check if master key exists, if not generate it
-if [ ! -f ~/.ssh/yk_control ]; then
+if [ ! -f $HOME_PATH/.ssh/yk_control ]; then
     echo ""
     echo "Generating master YubiKey control SSH key..."
     ssh-keygen -t ed25519 -f $HOME_PATH/.ssh/yk_control -C 'yubikey-control-master' -N ''
@@ -193,8 +194,8 @@ if grep -q "yubikey-control-master" $HOME_PATH/.ssh/authorized_keys 2>/dev/null;
     
     if [ "$UPDATE_SUBNET" = "y" ]; then
         # Remove old entry
-        grep -v "yubikey-control-master" $HOME_PATH/.ssh/authorized_keys > ~/.ssh/authorized_keys.tmp
-        mv ~/.ssh/authorized_keys.tmp $HOME_PATH/.ssh/authorized_keys
+        grep -v "yubikey-control-master" $HOME_PATH/.ssh/authorized_keys > $HOME_PATH/.ssh/authorized_keys.tmp
+        mv $HOME_PATH/.ssh/authorized_keys.tmp $HOME_PATH/.ssh/authorized_keys
         
         # Add new entry with updated subnet
         AUTHORIZED_KEYS_LINE="from=\"$CONTAINER_SUBNET\",command=\"$HOST_HOME/bin/yk-dispatcher\",restrict $HOST_PUBKEY"
@@ -224,8 +225,8 @@ echo ""
 echo "Setting up SSH directory in container..."
 
 lxc exec "$CONTAINER_NAME" -- su - "$CONTAINER_USER" -c "
-    mkdir -p $HOME_PATH/.ssh
-    chmod 700 $HOME_PATH/.ssh
+    mkdir -p $CONTAINER_HOME_PATH/.ssh
+    chmod 700 $CONTAINER_HOME_PATH/.ssh
 "
 
 # Copy the private key from host to container
@@ -235,9 +236,9 @@ lxc file push $HOME_PATH/.ssh/yk_control.pub "$CONTAINER_NAME/home/$CONTAINER_US
 
 # Set correct permissions in container
 lxc exec "$CONTAINER_NAME" -- su - "$CONTAINER_USER" -c "
-    chmod 600 $HOME_PATH/.ssh/yk_control
-    chmod 644 $HOME_PATH/.ssh/yk_control.pub
-    chown $CONTAINER_USER:$CONTAINER_USER $HOME_PATH/.ssh/yk_control $HOME_PATH/.ssh/yk_control.pub
+    chmod 600 $CONTAINER_HOME_PATH/.ssh/yk_control
+    chmod 644 $CONTAINER_HOME_PATH/.ssh/yk_control.pub
+    chown $CONTAINER_USER:$CONTAINER_USER $CONTAINER_HOME_PATH/.ssh/yk_control $CONTAINER_HOME_PATH/.ssh/yk_control.pub
 "
 
 echo "✓ SSH key copied to container"
@@ -247,13 +248,13 @@ echo ""
 echo "Adding aliases to container's ~/.zshrc..."
 
 lxc exec "$CONTAINER_NAME" -- su - "$CONTAINER_USER" -c "
-    if ! grep -q '# YubiKey control aliases' $HOME_PATH/.zshrc; then
-        cat >> $HOME_PATH/.zshrc << 'INNEREOF'
+    if ! grep -q '# YubiKey control aliases' $CONTAINER_HOME_PATH/.zshrc; then
+        cat >> $CONTAINER_HOME_PATH/.zshrc << 'INNEREOF'
 
 # YubiKey control aliases
-alias yk-claim='ssh -i $HOME_PATH/.ssh/yk_control -o \"IdentitiesOnly=yes\" -o \"StrictHostKeyChecking=accept-new\" HOST_IP_PLACEHOLDER claim CONTAINER_NAME_PLACEHOLDER'
-alias yk-release='ssh -i $HOME_PATH/.ssh/yk_control -o \"IdentitiesOnly=yes\" HOST_IP_PLACEHOLDER release CONTAINER_NAME_PLACEHOLDER'
-alias yk-status='ssh -i $HOME_PATH/.ssh/yk_control -o \"IdentitiesOnly=yes\" HOST_IP_PLACEHOLDER status CONTAINER_NAME_PLACEHOLDER'
+alias yk-claim='ssh -i $CONTAINER_HOME_PATH/.ssh/yk_control -o \"IdentitiesOnly=yes\" -o \"StrictHostKeyChecking=accept-new\" HOST_IP_PLACEHOLDER claim CONTAINER_NAME_PLACEHOLDER'
+alias yk-release='ssh -i $CONTAINER_HOME_PATH/.ssh/yk_control -o \"IdentitiesOnly=yes\" HOST_IP_PLACEHOLDER release CONTAINER_NAME_PLACEHOLDER'
+alias yk-status='ssh -i $CONTAINER_HOME_PATH/.ssh/yk_control -o \"IdentitiesOnly=yes\" HOST_IP_PLACEHOLDER status CONTAINER_NAME_PLACEHOLDER'
 INNEREOF
         echo '✓ Aliases added to container ~/.zshrc'
     else
@@ -263,8 +264,8 @@ INNEREOF
 
 # Replace placeholders with actual values
 lxc exec "$CONTAINER_NAME" -- su - "$CONTAINER_USER" -c "
-    sed -i 's/HOST_IP_PLACEHOLDER/$HOST_IP/g' $HOME_PATH/.zshrc
-    sed -i 's/CONTAINER_NAME_PLACEHOLDER/$CONTAINER_NAME/g' $HOME_PATH/.zshrc
+    sed -i 's/HOST_IP_PLACEHOLDER/$HOST_IP/g' $CONTAINER_HOME_PATH/.zshrc
+    sed -i 's/CONTAINER_NAME_PLACEHOLDER/$CONTAINER_NAME/g' $CONTAINER_HOME_PATH/.zshrc
 "
 
 echo "✓ Container setup complete"
@@ -279,7 +280,7 @@ echo "=== Testing Setup ==="
 # Test 1: Try to claim YubiKey
 echo ""
 echo "Test 1: Claiming YubiKey from container..."
-if lxc exec "$CONTAINER_NAME" -- su - "$CONTAINER_USER" -c "ssh -i $HOME_PATH/.ssh/yk_control -o 'StrictHostKeyChecking=accept-new' -o 'IdentitiesOnly=yes' $HOST_IP claim $CONTAINER_NAME"; then
+if lxc exec "$CONTAINER_NAME" -- su - "$CONTAINER_USER" -c "ssh -i $CONTAINER_HOME_PATH/.ssh/yk_control -o 'StrictHostKeyChecking=accept-new' -o 'IdentitiesOnly=yes' $HOST_IP claim $CONTAINER_NAME"; then
     echo "✓ Test 1 passed: YubiKey claimed successfully"
 else
     echo "✗ Test 1 failed: Could not claim YubiKey"
@@ -290,7 +291,7 @@ sleep 2
 # Test 2: Try to release YubiKey
 echo ""
 echo "Test 2: Releasing YubiKey from container..."
-if lxc exec "$CONTAINER_NAME" -- su - "$CONTAINER_USER" -c "ssh -i $HOME_PATH/.ssh/yk_control -o 'IdentitiesOnly=yes' $HOST_IP release $CONTAINER_NAME"; then
+if lxc exec "$CONTAINER_NAME" -- su - "$CONTAINER_USER" -c "ssh -i $CONTAINER_HOME_PATH/.ssh/yk_control -o 'IdentitiesOnly=yes' $HOST_IP release $CONTAINER_NAME"; then
     echo "✓ Test 2 passed: YubiKey released successfully"
 else
     echo "✗ Test 2 failed: Could not release YubiKey"
@@ -301,7 +302,7 @@ sleep 2
 # Test 3: Try to run unauthorized command (should fail)
 echo ""
 echo "Test 3: Testing security restrictions (should deny)..."
-if lxc exec "$CONTAINER_NAME" -- su - "$CONTAINER_USER" -c "ssh -i $HOME_PATH/.ssh/yk_control -o 'IdentitiesOnly=yes' $HOST_IP 'ls -la' 2>&1" | grep -q "Invalid command"; then
+if lxc exec "$CONTAINER_NAME" -- su - "$CONTAINER_USER" -c "ssh -i $CONTAINER_HOME_PATH/.ssh/yk_control -o 'IdentitiesOnly=yes' $HOST_IP 'ls -la' 2>&1" | grep -q "Invalid command"; then
     echo "✓ Test 3 passed: Unauthorized commands blocked"
 else
     echo "⚠ Test 3: Could not verify command restrictions"
