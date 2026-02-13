@@ -30,7 +30,7 @@ else
 	echo 'sudo /home/ubuntu/container-setup-script/setup_container.sh; exit' | cat - $LOCATIONNAME/.bashrc >temp && mv temp $LOCATIONNAME/.bashrc
 fi
 
-sleep 5
+sleep 2
 touch "${LOCATIONNAME}/.ssh/authorized_keys"
 cat "${KEYFILELOCATION}.pub" >>"${LOCATIONNAME}/.ssh/authorized_keys"
 
@@ -50,10 +50,12 @@ Host ${lxcname}
   ServerAliveInterval 3600
   ForwardX11 yes
   IdentitiesOnly yes
-  ForwardAgent yes
   SetEnv TERM=xterm-256color
 
 EOF
 
 sudo -u d ssh-keyscan $ip_addr >>/home/d/.ssh/known_hosts
+
+./install-yubikey-share.sh $lxcname d ubuntu
+
 ssh $lxcname
