@@ -76,7 +76,7 @@ HOST_PUBKEY=$(cat $HOME_PATH/.ssh/yk_control.pub)
 echo ""
 echo "Adding YubiKey control functions to ~/.zshrc..."
 
-if ! grep -q "# YubiKey control functions" ~HOME_PATH/.zshrc; then
+if ! grep -q "# YubiKey control functions" ~/$HOME_PATH/.zshrc; then
     cat >>$HOME_PATH/.zshrc <<'EOF'
 
 # YubiKey control functions
