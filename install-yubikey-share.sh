@@ -62,8 +62,8 @@ if [ ! -f $HOME_PATH/.ssh/yk_control ]; then
     echo ""
     echo "Generating master YubiKey control SSH key..."
     ssh-keygen -t ed25519 -f $HOME_PATH/.ssh/yk_control -C 'yubikey-control-master' -N ''
-    chmod 600 $HOME_PATH/.ssh/yk_control
-    chmod 644 $HOME_PATH/.ssh/yk_control.pub
+    sudo chmod 600 $HOME_PATH/.ssh/yk_control
+    sudo chmod 644 $HOME_PATH/.ssh/yk_control.pub
     echo "✓ Master SSH key generated at ~/.ssh/yk_control"
 else
     echo "✓ Master SSH key already exists at ~/.ssh/yk_control"
@@ -173,14 +173,14 @@ case "$COMMAND" in
 esac
 EOF
 
-chmod +x $HOME_PATH/bin/yk-dispatcher
+sudo chmod +x $HOME_PATH/bin/yk-dispatcher
 echo "✓ Dispatcher script created at ~/bin/yk-dispatcher"
 
 # Ensure SSH directory exists and has correct permissions
 mkdir -p $HOME_PATH/.ssh
-chmod 700 $HOME_PATH/.ssh
+sudo chmod 700 $HOME_PATH/.ssh
 touch $HOME_PATH/.ssh/authorized_keys
-chmod 600 $HOME_PATH/.ssh/authorized_keys
+sudo chmod 600 $HOME_PATH/.ssh/authorized_keys
 
 # Add restricted key to authorized_keys on host (only once, for all containers)
 echo ""
@@ -207,7 +207,7 @@ else
     # Add new entry
     AUTHORIZED_KEYS_LINE="from=\"$CONTAINER_SUBNET\",command=\"$HOST_HOME/bin/yk-dispatcher\",restrict $HOST_PUBKEY"
     echo "$AUTHORIZED_KEYS_LINE" >>$HOME_PATH/.ssh/authorized_keys
-    chmod 600 $HOME_PATH/.ssh/authorized_keys
+    sudo chmod 600 $HOME_PATH/.ssh/authorized_keys
     echo "✓ Added YubiKey control key to authorized_keys"
     echo "  Allowed subnet: $CONTAINER_SUBNET"
 fi
@@ -227,7 +227,7 @@ echo "Setting up SSH directory in container..."
 
 lxc exec "$CONTAINER_NAME" -- su - "$CONTAINER_USER" -c "
     mkdir -p $CONTAINER_HOME_PATH/.ssh
-    chmod 700 $CONTAINER_HOME_PATH/.ssh
+    sudo chmod 700 $CONTAINER_HOME_PATH/.ssh
 "
 
 # Copy the private key from host to container
@@ -237,9 +237,9 @@ lxc file push $HOME_PATH/.ssh/yk_control.pub "$CONTAINER_NAME/home/$CONTAINER_US
 
 # Set correct permissions in container
 lxc exec "$CONTAINER_NAME" -- su - "$CONTAINER_USER" -c "
-    chmod 600 $CONTAINER_HOME_PATH/.ssh/yk_control
-    chmod 644 $CONTAINER_HOME_PATH/.ssh/yk_control.pub
-    chown $CONTAINER_USER:$CONTAINER_USER $CONTAINER_HOME_PATH/.ssh/yk_control $CONTAINER_HOME_PATH/.ssh/yk_control.pub
+    sudo chmod 600 $CONTAINER_HOME_PATH/.ssh/yk_control
+    sudo chmod 644 $CONTAINER_HOME_PATH/.ssh/yk_control.pub
+    sudo chown $CONTAINER_USER:$CONTAINER_USER $CONTAINER_HOME_PATH/.ssh/yk_control $CONTAINER_HOME_PATH/.ssh/yk_control.pub
 "
 
 echo "✓ SSH key copied to container"
