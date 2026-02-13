@@ -9,8 +9,9 @@ echo ""
 echo "usage ./install-yubikey-share.sh CONTAINER_NAME HOST_USER CONTAINER_USER"
 
 if [ $# != 3 ]; then
-  echo "incorrect number of arguments"
-  exit 1
+    echo "incorrect number of arguments"
+    exit 1
+fi
 
 # Configuration
 CONTAINER_NAME=$1
@@ -76,7 +77,7 @@ echo ""
 echo "Adding YubiKey control functions to ~/.zshrc..."
 
 if ! grep -q "# YubiKey control functions" ~HOME_PATH/.zshrc; then
-    cat >> $HOME_PATH/.zshrc << 'EOF'
+    cat >>$HOME_PATH/.zshrc <<'EOF'
 
 # YubiKey control functions
 yk-to-container() {
@@ -124,7 +125,7 @@ EOF
 
     # Set default container name
     sed -i "s/CONTAINER_NAME_PLACEHOLDER/$CONTAINER_NAME/g" ~/.zshrc
-    
+
     echo "✓ Functions added to ~/.zshrc"
 else
     echo "⚠ Functions already exist in ~/.zshrc, skipping..."
@@ -137,7 +138,7 @@ source $HOME_PATH/.zshrc
 echo ""
 echo "Creating SSH dispatcher script..."
 
-cat > $HOME_PATH/bin/yk-dispatcher << 'EOF'
+cat >$HOME_PATH/bin/yk-dispatcher <<'EOF'
 #!/bin/bash
 set -e
 
@@ -191,21 +192,21 @@ HOST_HOME=$(eval echo ~$HOST_USER)
 if grep -q "yubikey-control-master" $HOME_PATH/.ssh/authorized_keys 2>/dev/null; then
     echo "⚠ YubiKey control key already exists in authorized_keys"
     read -p "Update subnet restriction to $CONTAINER_SUBNET? (y/n): " UPDATE_SUBNET
-    
+
     if [ "$UPDATE_SUBNET" = "y" ]; then
         # Remove old entry
-        grep -v "yubikey-control-master" $HOME_PATH/.ssh/authorized_keys > $HOME_PATH/.ssh/authorized_keys.tmp
+        grep -v "yubikey-control-master" $HOME_PATH/.ssh/authorized_keys >$HOME_PATH/.ssh/authorized_keys.tmp
         mv $HOME_PATH/.ssh/authorized_keys.tmp $HOME_PATH/.ssh/authorized_keys
-        
+
         # Add new entry with updated subnet
         AUTHORIZED_KEYS_LINE="from=\"$CONTAINER_SUBNET\",command=\"$HOST_HOME/bin/yk-dispatcher\",restrict $HOST_PUBKEY"
-        echo "$AUTHORIZED_KEYS_LINE" >> $HOME_PATH/.ssh/authorized_keys
+        echo "$AUTHORIZED_KEYS_LINE" >>$HOME_PATH/.ssh/authorized_keys
         echo "✓ Updated authorized_keys with new subnet: $CONTAINER_SUBNET"
     fi
 else
     # Add new entry
     AUTHORIZED_KEYS_LINE="from=\"$CONTAINER_SUBNET\",command=\"$HOST_HOME/bin/yk-dispatcher\",restrict $HOST_PUBKEY"
-    echo "$AUTHORIZED_KEYS_LINE" >> $HOME_PATH/.ssh/authorized_keys
+    echo "$AUTHORIZED_KEYS_LINE" >>$HOME_PATH/.ssh/authorized_keys
     chmod 600 $HOME_PATH/.ssh/authorized_keys
     echo "✓ Added YubiKey control key to authorized_keys"
     echo "  Allowed subnet: $CONTAINER_SUBNET"
