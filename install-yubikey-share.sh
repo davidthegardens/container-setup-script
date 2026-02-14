@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+set +e
 
 # YubiKey SSH Control - Automated Setup Script
 # This script sets up secure YubiKey sharing between host and LXD container
@@ -138,7 +138,7 @@ fi
 echo ""
 echo "Creating SSH dispatcher script..."
 
-cat >$HOME_PATH/bin/yk-dispatcher <<'EOF'
+cat >$HOME_PATH/bin/yk-dispatcher <<EOF
 #!/bin/bash
 set -e
 
@@ -196,16 +196,15 @@ if grep -q "yubikey-control-master" $HOME_PATH/.ssh/authorized_keys 2>/dev/null;
     if [ "$UPDATE_SUBNET" = "y" ]; then
         # Remove old entry
         grep -v "yubikey-control-master" $HOME_PATH/.ssh/authorized_keys >$HOME_PATH/.ssh/authorized_keys.tmp
-        mv $HOME_PATH/.ssh/authorized_keys.tmp $HOME_PATH/.ssh/authorized_keys
-
+        sudo mv $HOME_PATH/.ssh/authorized_keys.tmp $HOME_PATH/.ssh/authorized_keys
         # Add new entry with updated subnet
         AUTHORIZED_KEYS_LINE="from=\"$CONTAINER_SUBNET\",command=\"$HOST_HOME/bin/yk-dispatcher\",restrict $HOST_PUBKEY"
-        echo "$AUTHORIZED_KEYS_LINE" >>$HOME_PATH/.ssh/authorized_keys
+        sudo echo "$AUTHORIZED_KEYS_LINE" >>$HOME_PATH/.ssh/authorized_keys
         echo "✓ Updated authorized_keys with new subnet: $CONTAINER_SUBNET"
     fi
 else
     # Add new entry
-    AUTHORIZED_KEYS_LINE="from=\"$CONTAINER_SUBNET\",command=\"$HOST_HOME/bin/yk-dispatcher\",restrict $HOST_PUBKEY"
+    AUTHORIZED_KEYS_LINE="from=\"$CONTAINER_SUBNET\",command=\"$HOME_PATH/bin/yk-dispatcher\",restrict $HOST_PUBKEY"
     echo "$AUTHORIZED_KEYS_LINE" >>$HOME_PATH/.ssh/authorized_keys
     sudo chmod 600 $HOME_PATH/.ssh/authorized_keys
     echo "✓ Added YubiKey control key to authorized_keys"
@@ -253,9 +252,9 @@ lxc exec "$CONTAINER_NAME" -- su - "$CONTAINER_USER" -c "
         cat >> $CONTAINER_HOME_PATH/.zshrc << 'INNEREOF'
 
 # YubiKey control aliases
-alias yk-claim='ssh -i $CONTAINER_HOME_PATH/.ssh/yk_control -o \"IdentitiesOnly=yes\" -o \"StrictHostKeyChecking=accept-new\" HOST_IP_PLACEHOLDER claim CONTAINER_NAME_PLACEHOLDER'
-alias yk-release='ssh -i $CONTAINER_HOME_PATH/.ssh/yk_control -o \"IdentitiesOnly=yes\" HOST_IP_PLACEHOLDER release CONTAINER_NAME_PLACEHOLDER'
-alias yk-status='ssh -i $CONTAINER_HOME_PATH/.ssh/yk_control -o \"IdentitiesOnly=yes\" HOST_IP_PLACEHOLDER status CONTAINER_NAME_PLACEHOLDER'
+alias yk-claim='ssh -i $CONTAINER_HOME_PATH/.ssh/yk_control -o \"IdentitiesOnly=yes\" -o \"StrictHostKeyChecking=accept-new\" d@HOST_IP_PLACEHOLDER claim CONTAINER_NAME_PLACEHOLDER'
+alias yk-release='ssh -i $CONTAINER_HOME_PATH/.ssh/yk_control -o \"IdentitiesOnly=yes\" d@HOST_IP_PLACEHOLDER release CONTAINER_NAME_PLACEHOLDER'
+alias yk-status='ssh -i $CONTAINER_HOME_PATH/.ssh/yk_control -o \"IdentitiesOnly=yes\" d@HOST_IP_PLACEHOLDER status CONTAINER_NAME_PLACEHOLDER'
 INNEREOF
         echo '✓ Aliases added to container ~/.zshrc'
     else
