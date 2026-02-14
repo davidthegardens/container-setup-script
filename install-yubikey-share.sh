@@ -17,7 +17,7 @@ fi
 CONTAINER_NAME=$1
 HOST_USER=$2
 CONTAINER_USER=$3
-HOME_PATH="/home/$2/"
+HOME_PATH="/home/$2"
 CONTAINER_HOME_PATH="/home/$3"
 
 # Detect container IP
