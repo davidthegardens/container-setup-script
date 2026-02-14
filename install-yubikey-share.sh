@@ -142,21 +142,57 @@ cat >$HOME_PATH/bin/yk-dispatcher <<EOF
 #!/bin/bash
 set -e
 
-# Source the YubiKey control functions
-if [ -f $HOME_PATH/.zshrc ]; then
-    source $HOME_PATH/.zshrc
-elif [ -f $HOME_PATH/.bashrc ]; then
-    source $HOME_PATH/.bashrc
-fi
-
-# Log file for security monitoring
-LOG_FILE=$HOME_PATH/yk-control.log
+# Log file for security monitoring  
+LOG_FILE=${HOME_PATH}yk-control.log
 
 log_attempt() {
     echo "\$(date '+%Y-%m-%d %H:%M:%S') - Client: \$SSH_CLIENT - Command: \$SSH_ORIGINAL_COMMAND" >> "\$LOG_FILE"
 }
 
 log_attempt
+
+# YubiKey control functions (defined inline)
+yk-to-container() {
+    local container_name="\${1:-$CONTAINER_NAME}"
+    local yk_device=\$(ls /dev/hidraw* 2>/dev/null | head -1)
+    
+    if [ -z "\$yk_device" ]; then
+        echo "Error: No YubiKey found on host"
+        return 1
+    fi
+    
+    echo "Passing \$yk_device to container \$container_name..."
+    lxc config device add "\$container_name" yubikey unix-char path="\$yk_device"
+    
+    if [ \$? -eq 0 ]; then
+        echo "YubiKey successfully passed to container"
+    else
+        echo "Error: Failed to pass YubiKey to container"
+        return 1
+    fi
+}
+
+yk-to-host() {
+    local container_name="\${1:-$CONTAINER_NAME}"
+    
+    echo "Reclaiming YubiKey from container..."
+    lxc config device remove "\$container_name" yubikey 2>/dev/null
+    
+    sleep 1
+    
+    local yk_device=\$(ls /dev/hidraw* 2>/dev/null | head -1)
+    if [ -n "\$yk_device" ]; then
+        echo "YubiKey successfully reclaimed: \$yk_device"
+    else
+        echo "Warning: YubiKey not detected on host yet (may need to wait)"
+    fi
+}
+
+yk-status() {
+    local container_name="\${1:-$CONTAINER_NAME}"
+    echo "Container devices:"
+    lxc config device show "\$container_name"
+}
 
 # Parse command: format is "claim CONTAINER_NAME" or just "claim"
 COMMAND=\$(echo "\$SSH_ORIGINAL_COMMAND" | awk '{print \$1}')
@@ -179,6 +215,7 @@ case "\$COMMAND" in
         ;;
 esac
 EOF
+
 sudo chmod +x $HOME_PATH/bin/yk-dispatcher
 echo "✓ Dispatcher script created at ~/bin/yk-dispatcher"
 
