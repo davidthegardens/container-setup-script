@@ -9,8 +9,8 @@ echo ""
 echo "usage ./install-yubikey-share.sh CONTAINER_NAME HOST_USER CONTAINER_USER"
 
 if [ $# != 3 ]; then
-    echo "incorrect number of arguments"
-    exit 1
+	echo "incorrect number of arguments"
+	exit 1
 fi
 
 # Configuration
@@ -26,8 +26,8 @@ echo "Detecting container IP..."
 CONTAINER_IP=$(lxc list "$CONTAINER_NAME" -c 4 -f csv | awk '{print $1}')
 
 if [ -z "$CONTAINER_IP" ]; then
-    echo "Error: Could not detect container IP. Is the container running?"
-    exit 1
+	echo "Error: Could not detect container IP. Is the container running?"
+	exit 1
 fi
 
 echo "Container IP: $CONTAINER_IP"
@@ -41,8 +41,8 @@ echo "Detecting host IP..."
 HOST_IP=$(lxc network get lxdbr0 ipv4.address | cut -d'/' -f1)
 
 if [ -z "$HOST_IP" ]; then
-    # Fallback method
-    HOST_IP=$(ip -4 addr show lxdbr0 | grep -oP '(?<=inet\s)\d+(\.\d+){3}')
+	# Fallback method
+	HOST_IP=$(ip -4 addr show lxdbr0 | grep -oP '(?<=inet\s)\d+(\.\d+){3}')
 fi
 
 echo "Host IP: $HOST_IP"
@@ -59,14 +59,14 @@ mkdir -p $HOME_PATH/bin
 
 # Check if master key exists, if not generate it
 if [ ! -f $HOME_PATH/.ssh/yk_control ]; then
-    echo ""
-    echo "Generating master YubiKey control SSH key..."
-    ssh-keygen -t ed25519 -f $HOME_PATH/.ssh/yk_control -C 'yubikey-control-master' -N ''
-    sudo chmod 600 $HOME_PATH/.ssh/yk_control
-    sudo chmod 644 $HOME_PATH/.ssh/yk_control.pub
-    echo "✓ Master SSH key generated at ~/.ssh/yk_control"
+	echo ""
+	echo "Generating master YubiKey control SSH key..."
+	ssh-keygen -t ed25519 -f $HOME_PATH/.ssh/yk_control -C 'yubikey-control-master' -N ''
+	sudo chmod 600 $HOME_PATH/.ssh/yk_control
+	sudo chmod 644 $HOME_PATH/.ssh/yk_control.pub
+	echo "✓ Master SSH key generated at ~/.ssh/yk_control"
 else
-    echo "✓ Master SSH key already exists at ~/.ssh/yk_control"
+	echo "✓ Master SSH key already exists at ~/.ssh/yk_control"
 fi
 
 # Get the public key
@@ -77,7 +77,7 @@ echo ""
 echo "Adding YubiKey control functions to ~/.zshrc..."
 
 if ! grep -q "# YubiKey control functions" $HOME_PATH/.zshrc; then
-    cat >>$HOME_PATH/.zshrc <<'EOF'
+	cat >>$HOME_PATH/.zshrc <<'EOF'
 
 # YubiKey control functions
 yk-to-container() {
@@ -123,12 +123,12 @@ yk-status() {
 }
 EOF
 
-    # Set default container name
-    sed -i "s/CONTAINER_NAME_PLACEHOLDER/$CONTAINER_NAME/g" $HOME_PATH/.zshrc
+	# Set default container name
+	sed -i "s/CONTAINER_NAME_PLACEHOLDER/$CONTAINER_NAME/g" $HOME_PATH/.zshrc
 
-    echo "✓ Functions added to ~/.zshrc"
+	echo "✓ Functions added to ~/.zshrc"
 else
-    echo "⚠ Functions already exist in ~/.zshrc, skipping..."
+	echo "⚠ Functions already exist in ~/.zshrc, skipping..."
 fi
 
 # Source the functions for current session
@@ -142,37 +142,43 @@ cat >$HOME_PATH/bin/yk-dispatcher <<EOF
 #!/bin/bash
 set -e
 
+# Source the YubiKey control functions
+if [ -f $HOME_PATH/.zshrc ]; then
+    source $HOME_PATH/.zshrc
+elif [ -f $HOME_PATH/.bashrc ]; then
+    source $HOME_PATH/.bashrc
+fi
+
 # Log file for security monitoring
 LOG_FILE=$HOME_PATH/yk-control.log
 
 log_attempt() {
-    echo "$(date '+%Y-%m-%d %H:%M:%S') - Client: $SSH_CLIENT - Command: $SSH_ORIGINAL_COMMAND" >> "$LOG_FILE"
+    echo "\$(date '+%Y-%m-%d %H:%M:%S') - Client: \$SSH_CLIENT - Command: \$SSH_ORIGINAL_COMMAND" >> "\$LOG_FILE"
 }
 
 log_attempt
 
 # Parse command: format is "claim CONTAINER_NAME" or just "claim"
-COMMAND=$(echo "$SSH_ORIGINAL_COMMAND" | awk '{print $1}')
-CONTAINER_ARG=$(echo "$SSH_ORIGINAL_COMMAND" | awk '{print $2}')
+COMMAND=\$(echo "\$SSH_ORIGINAL_COMMAND" | awk '{print \$1}')
+CONTAINER_ARG=\$(echo "\$SSH_ORIGINAL_COMMAND" | awk '{print \$2}')
 
-case "$COMMAND" in
+case "\$COMMAND" in
     "claim")
-        yk-to-container "$CONTAINER_ARG"
+        yk-to-container "\$CONTAINER_ARG"
         ;;
     "release")
-        yk-to-host "$CONTAINER_ARG"
+        yk-to-host "\$CONTAINER_ARG"
         ;;
     "status")
-        yk-status "$CONTAINER_ARG"
+        yk-status "\$CONTAINER_ARG"
         ;;
     *)
-        echo "$(date '+%Y-%m-%d %H:%M:%S') - DENIED - Client: $SSH_CLIENT - Command: $SSH_ORIGINAL_COMMAND" >> "$LOG_FILE"
+        echo "\$(date '+%Y-%m-%d %H:%M:%S') - DENIED - Client: \$SSH_CLIENT - Command: \$SSH_ORIGINAL_COMMAND" >> "\$LOG_FILE"
         echo "Error: Invalid command. Allowed: claim [container], release [container], status [container]"
         exit 1
         ;;
 esac
 EOF
-
 sudo chmod +x $HOME_PATH/bin/yk-dispatcher
 echo "✓ Dispatcher script created at ~/bin/yk-dispatcher"
 
@@ -190,25 +196,25 @@ HOST_HOME=$(eval echo ~$HOST_USER)
 
 # Check if the key already exists
 if grep -q "yubikey-control-master" $HOME_PATH/.ssh/authorized_keys 2>/dev/null; then
-    echo "⚠ YubiKey control key already exists in authorized_keys"
-    read -p "Update subnet restriction to $CONTAINER_SUBNET? (y/n): " UPDATE_SUBNET
+	echo "⚠ YubiKey control key already exists in authorized_keys"
+	read -p "Update subnet restriction to $CONTAINER_SUBNET? (y/n): " UPDATE_SUBNET
 
-    if [ "$UPDATE_SUBNET" = "y" ]; then
-        # Remove old entry
-        grep -v "yubikey-control-master" $HOME_PATH/.ssh/authorized_keys >$HOME_PATH/.ssh/authorized_keys.tmp
-        sudo mv $HOME_PATH/.ssh/authorized_keys.tmp $HOME_PATH/.ssh/authorized_keys
-        # Add new entry with updated subnet
-        AUTHORIZED_KEYS_LINE="from=\"$CONTAINER_SUBNET\",command=\"$HOST_HOME/bin/yk-dispatcher\",restrict $HOST_PUBKEY"
-        sudo echo "$AUTHORIZED_KEYS_LINE" >>$HOME_PATH/.ssh/authorized_keys
-        echo "✓ Updated authorized_keys with new subnet: $CONTAINER_SUBNET"
-    fi
+	if [ "$UPDATE_SUBNET" = "y" ]; then
+		# Remove old entry
+		grep -v "yubikey-control-master" $HOME_PATH/.ssh/authorized_keys >$HOME_PATH/.ssh/authorized_keys.tmp
+		sudo mv $HOME_PATH/.ssh/authorized_keys.tmp $HOME_PATH/.ssh/authorized_keys
+		# Add new entry with updated subnet
+		AUTHORIZED_KEYS_LINE="from=\"$CONTAINER_SUBNET\",command=\"$HOST_HOME/bin/yk-dispatcher\",restrict $HOST_PUBKEY"
+		sudo echo "$AUTHORIZED_KEYS_LINE" >>$HOME_PATH/.ssh/authorized_keys
+		echo "✓ Updated authorized_keys with new subnet: $CONTAINER_SUBNET"
+	fi
 else
-    # Add new entry
-    AUTHORIZED_KEYS_LINE="from=\"$CONTAINER_SUBNET\",command=\"$HOME_PATH/bin/yk-dispatcher\",restrict $HOST_PUBKEY"
-    echo "$AUTHORIZED_KEYS_LINE" >>$HOME_PATH/.ssh/authorized_keys
-    sudo chmod 600 $HOME_PATH/.ssh/authorized_keys
-    echo "✓ Added YubiKey control key to authorized_keys"
-    echo "  Allowed subnet: $CONTAINER_SUBNET"
+	# Add new entry
+	AUTHORIZED_KEYS_LINE="from=\"$CONTAINER_SUBNET\",command=\"$HOME_PATH/bin/yk-dispatcher\",restrict $HOST_PUBKEY"
+	echo "$AUTHORIZED_KEYS_LINE" >>$HOME_PATH/.ssh/authorized_keys
+	sudo chmod 600 $HOME_PATH/.ssh/authorized_keys
+	echo "✓ Added YubiKey control key to authorized_keys"
+	echo "  Allowed subnet: $CONTAINER_SUBNET"
 fi
 
 echo "✓ Host setup complete"
