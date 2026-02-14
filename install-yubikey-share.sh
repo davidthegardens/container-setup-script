@@ -274,8 +274,11 @@ lxc exec "$CONTAINER_NAME" -- su - "$CONTAINER_USER" -c "
 
 # Copy the private key from host to container
 echo "Copying SSH key from host to container..."
-lxc file push $HOME_PATH/.ssh/yk_control "$CONTAINER_NAME/home/$CONTAINER_USER/.ssh/yk_control"
-lxc file push $HOME_PATH/.ssh/yk_control.pub "$CONTAINER_NAME/home/$CONTAINER_USER/.ssh/yk_control.pub"
+# Copy private key via stdin
+cat $HOME_PATH/.ssh/yk_control | lxc exec "$CONTAINER_NAME" -- su - "$CONTAINER_USER" -c "cat > $CONTAINER_HOME_PATH/.ssh/yk_control"
+
+# Copy public key via stdin
+cat $HOME_PATH/.ssh/yk_control.pub | lxc exec "$CONTAINER_NAME" -- su - "$CONTAINER_USER" -c "cat > $CONTAINER_HOME_PATH/.ssh/yk_control.pub"
 
 # Set correct permissions in container
 lxc exec "$CONTAINER_NAME" -- su - "$CONTAINER_USER" -c "
