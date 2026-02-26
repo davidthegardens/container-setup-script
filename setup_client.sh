@@ -42,20 +42,10 @@ fi
 
 cat <<EOF >>/home/d/.ssh/config
 
-Host ${lxcname}
-  IdentityFile ${KEYFILELOCATION}
+Host oc-${lxcname}
   Hostname ${ip_addr}
-  User ubuntu
-  LocalForward 3000 localhost:3000
-  ServerAliveInterval 3600
-  ForwardX11 yes
-  IdentitiesOnly yes
-  SetEnv TERM=xterm-256color
-
 EOF
 
 sudo -u d ssh-keyscan $ip_addr >>/home/d/.ssh/known_hosts
 
-./install-yubikey-share.sh $lxcname d ubuntu
-
-ssh $lxcname
+sudo -u d ssh $lxcname
