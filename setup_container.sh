@@ -43,6 +43,11 @@ sudo systemctl start ssh && sudo systemctl enable ssh
 echo -e "${GREEN} Installing oh my zsh"${RESET}
 sudo -u $my_username sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
 
+# Install cursor cli, claude code
+echo -e "${GREEN} Installing ai helper elves"${RESET}
+curl -fsSL https://claude.ai/install.sh | bash
+curl https://cursor.com/install -fsS | bash
+
 # Install zsh plugins
 echo -e "${GREEN} Installing oh my zsh plugins"${RESET}
 sudo -u $my_username git clone https://github.com/zsh-users/zsh-autosuggestions.git $ZSH_CUSTOM/plugins/zsh-autosuggestions
@@ -63,6 +68,9 @@ export EDITOR="nvim"
 alias lighten="sed -i s'/"tokyonight-night"/"tokyonight-light"/' $home_path/.config/nvim/lua/plugins/astroui.lua"
 alias darken="sed -i s'/"tokyonight-light"/"tokyonight-night"/' $home_path/.config/nvim/lua/plugins/astroui.lua"
 alias gcp="git add . && git commit -m 'routine commit' && git push"
+export ANTHROPIC_AUTH_TOKEN=ollama
+export ANTHROPIC_API_KEY=""
+export ANTHROPIC_BASE_URL=http://localhost:11434
 EOF
 
 # Customize tmux
